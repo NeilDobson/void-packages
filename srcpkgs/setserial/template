@@ -1,0 +1,22 @@
+# Template file for 'setserial'
+pkgname=setserial
+version=1.0
+revision=1
+wrksrc=setserial-master
+#create_wrksrc=yes
+#archs="i686 x86_64"
+build_style=gnu-configure
+#configure_args=""
+#make_build_args=""
+#make_install_args=""
+#conf_files=""
+#make_dirs="/var/log/dir 0755 root root"
+hostmakedepends=""
+makedepends="unzip groff"
+depends=""
+short_desc="Change the settings of a serial port"
+maintainer="Neil Darach <neil.darach@gmail.com>"
+license="GPL-3.0-or-later"
+homepage="https://github.com/Distrotech/setserial"
+distfiles="https://speedy.goip.org.uk/void-source/setserial.zip"
+checksum=b1c75fb1c69864337101842f641419e0a08ab64bda56610c7c0367f2ff52fd50
