@@ -1,0 +1,12 @@
+diff -Naur asterisk-clean/third-party/pjproject/Makefile asterisk-16.3.0/third-party/pjproject/Makefile
+--- asterisk-clean/third-party/pjproject/Makefile	2019-07-29 20:25:23.155969412 +0000
++++ third-party/pjproject/Makefile	2019-04-04 14:49:57.000000000 +0000
+@@ -96,7 +96,7 @@
+ 	$(SHELL_ECHO_PREFIX) Retrying download ; $(TARBALL_DOWNLOAD))
+ 	$(ECHO_PREFIX) Unpacking $<
+ 	-@rm -rf source pjproject-*/ >/dev/null 2>&1
+-	$(CMD_PREFIX) $(TAR) -xjf $<
++	$(CMD_PREFIX) $(TAR) --no-same-owner -xjf $<
+ 	@mv pjproject-$(PJPROJECT_VERSION) source
+ 	$(ECHO_PREFIX) Applying patches "$(realpath patches)" "$(realpath .)/source"
+ 	$(CMD_PREFIX) ../apply_patches $(QUIET_CONFIGURE) "$(realpath patches)" "$(realpath .)/source"

@@ -1,0 +1,31 @@
+--- asterisk-16.3.0/configure	2019-04-04 14:49:57.000000000 +0000
++++ configure	2019-07-11 17:18:18.269862672 +0000
+@@ -13687,7 +13687,7 @@
+   $as_echo_n "(cached) " >&6
+ else
+   ac_check_lib_save_LIBS=$LIBS
+-LIBS="-ledit ${pbxlibdir} -ltermcap $LIBS"
++LIBS="-ledit ${pbxlibdir} $LIBS"
+ cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ 
+@@ -13728,7 +13728,7 @@
+ 
+    # now check for the header.
+    if test "${AST_LIBEDIT_FOUND}" = "yes"; then
+-      LIBEDIT_LIB="${pbxlibdir} -ledit -ltermcap"
++      LIBEDIT_LIB="${pbxlibdir} -ledit"
+       # if --with-LIBEDIT=DIR has been specified, use it.
+       if test "x${LIBEDIT_DIR}" != "x"; then
+          LIBEDIT_INCLUDE="-I${LIBEDIT_DIR}/include"
+--- asterisk-16.3.0/configure.ac	2019-04-04 14:49:57.000000000 +0000
++++ configure.ac	2019-07-11 17:18:27.539862668 +0000
+@@ -643,7 +643,7 @@
+ # Find required NetBSD Editline library (libedit).
+ AST_PKG_CONFIG_CHECK(LIBEDIT, libedit)
+ # some platforms do not list libedit via pkg-config, for example OpenBSD 6.2
+-AST_EXT_LIB_CHECK([LIBEDIT], [edit], [history_init], [histedit.h], [-ltermcap])
++AST_EXT_LIB_CHECK([LIBEDIT], [edit], [history_init], [histedit.h])
+ if test "${PBX_LIBEDIT}" != 1; then
+ 	AC_MSG_ERROR(*** Please install the 'libedit' development package.)
+ 	exit 1

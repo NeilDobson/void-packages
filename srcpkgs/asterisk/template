@@ -1,0 +1,41 @@
+# Template file for 'asterisk'
+pkgname=asterisk
+version=16.3.0
+revision=1
+#wrksrc=
+#create_wrksrc=yes
+#archs="i686 x86_64"
+build_style=gnu-configure
+#configure_args="--enable-permanent-dlopen --with-gsm=internal --with-z --with-sqlite3 --without-x11 --with-pjproject-bundled"
+#make_build_args=""
+#make_install_args=""
+#conf_files=""
+#make_dirs="/var/log/dir 0755 root root"
+hostmakedepends=""
+makedepends="jansson-devel libedit-devel speex-devel speexdsp-devel libsrtp-devel libsamplerate-devel sqlite-devel libuuid-devel libxml2-devel libressl-devel alsa-lib wget"
+depends="jansson libedit speex speexdsp libsrtp libsamplerate sqlite libuuid libxml2 libressl alsa-lib-devel"
+make_dirs="
+/var/spool/asterisk/voicemail              755 root root
+/var/spool/asterisk/tmp                    755 root root
+/var/spool/asterisk/system                 755 root root
+/var/spool/asterisk/recording              755 root root
+/var/spool/asterisk/monitor                755 root root
+/var/spool/asterisk/meetme                 755 root root
+/var/spool/asterisk/dictate                755 root root
+/var/run/asterisk                          755 root root
+/var/log/asterisk/cel-custom               755 root root
+/var/log/asterisk/cdr-custom               755 root root
+/var/log/asterisk/cdr-csv                  755 root root
+/var/lib/asterisk/third-party/pjproject    755 root root
+/var/lib/asterisk/phoneprov                755 root root
+/var/lib/asterisk/keys                     755 root root
+/var/lib/asterisk/firmware/iax             755 root root
+/var/lib/asterisk/documentation/thirdparty 755 root root
+/var/lib/asterisk/agi-bin                  755 root root
+/etc/asterisk                              755 root root"
+short_desc="Asterisk PBX"
+maintainer="Neil Darach <neil.darach@gmail.com>"
+license="GPL-3.0-or-later"
+homepage="https://asterisk.org"
+distfiles="https://downloads.asterisk.org/pub/telephony/asterisk/releases/asterisk-16.3.0.tar.gz"
+checksum=8b22ee7c0c0b5557eff273118703c6fce8b743c12bbeb679ed86b3f197444a8e

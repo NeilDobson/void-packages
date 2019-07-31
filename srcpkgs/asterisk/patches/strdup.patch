@@ -1,0 +1,12 @@
+--- asterisk-16.3.0/main/loader.c	2019-07-16 10:35:50.889999910 +0000
++++ main/loader.c	2019-07-16 10:31:21.590000013 +0000
+@@ -1087,7 +1087,8 @@
+	if (resource_being_loaded) {
+		struct ast_str *list;
+		int c = 0;
+-		const char *dlerror_msg = ast_strdupa(dlerror());
++		const char *dlerror_msg = dlerror();
++		dlerror_msg = ast_strdupa(dlerror_msg ? dlerror_msg : "");
+
+		resource_being_loaded = NULL;
+		if (mod->lib) {
