@@ -39,3 +39,12 @@ license="GPL-3.0-or-later"
 homepage="https://asterisk.org"
 distfiles="https://downloads.asterisk.org/pub/telephony/asterisk/releases/asterisk-16.3.0.tar.gz"
 checksum=8b22ee7c0c0b5557eff273118703c6fce8b743c12bbeb679ed86b3f197444a8e
+
+asterisk-devel_package() {
+	short_desc+=" - development files"
+	depends="${sourcepkg}=${version}_${revision}"
+	pkg_install() {
+		vmove usr/include
+	}
+}
+

@@ -1,0 +1,28 @@
+# Template file for 'asterisk-chan-dongle'
+pkgname=asterisk-chan-dongle
+version=1.0
+revision=1
+wrksrc=asterisk-chan-dongle-master
+#create_wrksrc=yes
+#archs="i686 x86_64"
+build_style=gnu-configure
+configure_args="--with-astversion=16.3.0"
+#make_build_args=""
+#make_install_args=""
+#conf_files=""
+#make_dirs="/var/log/dir 0755 root root"
+hostmakedepends=""
+makedepends="unzip autoconf automake"
+depends=""
+short_desc="Module to interface with USB mobile dongle"
+maintainer="Neil Darach <neil.darach@gmail.com>"
+license="GPL-3.0-or-later"
+homepage="http://speedy.goip.org.uk"
+#distfiles="https://downloads.asterisk.org/pub/telephony/asterisk/releases/asterisk-16.3.0.tar.gz https://speedy.goip.org.uk/void-source/asterisk-chan-dongle-master.zip"
+#checksum="8b22ee7c0c0b5557eff273118703c6fce8b743c12bbeb679ed86b3f197444a8e e123c3cfe2c5986e5e635fba8319bfa070c015d3eb64e4c32eb559d5f1545e21"
+distfiles="https://speedy.goip.org.uk/void-source/asterisk-chan-dongle-master.zip"
+checksum="e123c3cfe2c5986e5e635fba8319bfa070c015d3eb64e4c32eb559d5f1545e21"
+
+pre_configure() {
+	./bootstrap
+}
