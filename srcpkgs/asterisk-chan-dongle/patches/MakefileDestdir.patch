@@ -1,0 +1,11 @@
+
++++ Makefile.in	2019-08-06 22:17:39.674799603 +0000
+@@ -53,7 +53,7 @@
+ install: all
+ 	$(STRIP) $(PROJM)
+ ifneq (@DESTDIR@,)
+-	$(INSTALL) -m 644 $(PROJM) @DESTDIR@
++	$(INSTALL) -m 644 $(PROJM) -D -t $(DESTDIR)@DESTDIR@
+ else
+ 	@echo >&2
+ 	@echo "*** Asterisk modules directory was not auto-detected." >&2
