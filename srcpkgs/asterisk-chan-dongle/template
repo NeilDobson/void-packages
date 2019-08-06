@@ -12,7 +12,7 @@ configure_args="--with-astversion=16.3.0"
 #conf_files=""
 #make_dirs="/var/log/dir 0755 root root"
 hostmakedepends=""
-makedepends="unzip autoconf automake"
+makedepends="unzip autoconf automake asterisk-devel"
 depends=""
 short_desc="Module to interface with USB mobile dongle"
 maintainer="Neil Darach <neil.darach@gmail.com>"
@@ -25,4 +25,8 @@ checksum="e123c3cfe2c5986e5e635fba8319bfa070c015d3eb64e4c32eb559d5f1545e21"
 
 pre_configure() {
 	./bootstrap
+}
+
+pkg_install() {
+        vmove usr/lib/modules/chan_dongle.so
 }

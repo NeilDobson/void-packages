@@ -1,7 +1,7 @@
 # Template file for 'asterisk'
 pkgname=asterisk
 version=16.3.0
-revision=1
+revision=2
 #wrksrc=
 #create_wrksrc=yes
 #archs="i686 x86_64"
@@ -42,7 +42,7 @@ checksum=8b22ee7c0c0b5557eff273118703c6fce8b743c12bbeb679ed86b3f197444a8e
 
 asterisk-devel_package() {
 	short_desc+=" - development files"
-	depends="${sourcepkg}=${version}_${revision}"
+	depends="asterisk"
 	pkg_install() {
 		vmove usr/include
 	}
