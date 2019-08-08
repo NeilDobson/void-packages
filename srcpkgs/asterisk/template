@@ -2,16 +2,10 @@
 pkgname=asterisk
 version=16.3.0
 revision=2
-#wrksrc=
 #create_wrksrc=yes
 #archs="i686 x86_64"
 build_style=gnu-configure
 #configure_args="--enable-permanent-dlopen --with-gsm=internal --with-z --with-sqlite3 --without-x11 --with-pjproject-bundled"
-#make_build_args=""
-#make_install_args=""
-#conf_files=""
-#make_dirs="/var/log/dir 0755 root root"
-hostmakedepends=""
 makedepends="jansson-devel libedit-devel speex-devel speexdsp-devel libsrtp-devel libsamplerate-devel sqlite-devel libuuid-devel libxml2-devel libressl-devel alsa-lib wget"
 depends="jansson libedit speex speexdsp libsrtp libsamplerate sqlite libuuid libxml2 libressl alsa-lib-devel"
 make_dirs="
@@ -37,12 +31,12 @@ short_desc="Asterisk PBX"
 maintainer="Neil Darach <neil.darach@gmail.com>"
 license="GPL-3.0-or-later"
 homepage="https://asterisk.org"
-distfiles="https://downloads.asterisk.org/pub/telephony/asterisk/releases/asterisk-16.3.0.tar.gz"
+distfiles="https://downloads.asterisk.org/pub/telephony/asterisk/releases/asterisk-${version}.tar.gz"
 checksum=8b22ee7c0c0b5557eff273118703c6fce8b743c12bbeb679ed86b3f197444a8e
 
 asterisk-devel_package() {
 	short_desc+=" - development files"
-	depends="asterisk"
+	depends="asterisk>=16.3.0_2"
 	pkg_install() {
 		vmove usr/include
 	}
