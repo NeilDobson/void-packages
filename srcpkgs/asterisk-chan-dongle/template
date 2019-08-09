@@ -8,7 +8,7 @@ wrksrc=asterisk-chan-dongle-master
 build_style=gnu-configure
 configure_args="--with-astversion=16.3.0"
 makedepends="unzip autoconf automake asterisk-devel"
-depends="asterisk>=16.3.0_2"
+depends="asterisk>=16.3.0_2 usb-modeswitch"
 short_desc="Module to interface with USB mobile dongle"
 maintainer="Neil Darach <neil.darach@gmail.com>"
 license="GPL-3.0-or-later"
