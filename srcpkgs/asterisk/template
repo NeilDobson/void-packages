@@ -1,11 +1,11 @@
 # Template file for 'asterisk'
 pkgname=asterisk
 version=16.3.0
-revision=2
+revision=3
 #create_wrksrc=yes
 #archs="i686 x86_64"
 build_style=gnu-configure
-#configure_args="--enable-permanent-dlopen --with-gsm=internal --with-z --with-sqlite3 --without-x11 --with-pjproject-bundled"
+configure_args="--enable-permanent-dlopen --with-gsm=internal --with-z --with-sqlite3 --without-x11 --with-pjproject-bundled"
 makedepends="jansson-devel libedit-devel speex-devel speexdsp-devel libsrtp-devel libsamplerate-devel sqlite-devel libuuid-devel libxml2-devel libressl-devel alsa-lib wget"
 depends="jansson libedit speex speexdsp libsrtp libsamplerate sqlite libuuid libxml2 libressl alsa-lib-devel"
 make_dirs="
