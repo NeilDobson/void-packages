@@ -1,10 +1,10 @@
 # Template file for 'hoogle'
 pkgname=hoogle
 version=5.0.17.3
-revision=1
+revision=2
 build_style=haskell-stack
 nocross=yes # Can't yet cross compile Haskell
-stackage="lts-12.0"
+stackage="lts-13.30"
 makedepends="zlib-devel"
 short_desc="Haskell API search engine"
 maintainer="Inokentiy Babushkin <twk@twki.de>"
@@ -13,6 +13,10 @@ homepage="http://hoogle.haskell.org/"
 distfiles="https://github.com/ndmitchell/${pkgname}/archive/v${version}.tar.gz"
 checksum=5e092a0b33f85ffe3c425939e082e4fdf7e219d74949cc8324edbcf464ac9587
 nopie_files="/usr/bin/hoogle"
+
+case "$XBPS_TARGET_MACHINE" in
+	*-musl) broken="https://build.voidlinux.org/builders/x86_64-musl_builder/builds/22212/steps/shell_3/logs/stdio" ;;
+esac
 
 post_install() {
 	vlicense LICENSE
