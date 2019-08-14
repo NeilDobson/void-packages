@@ -180,9 +180,10 @@ do_install() {
 	mkdir -p ${hdrdest}/arch/${_arch}
 	cp -a arch/${_arch}/include ${hdrdest}/arch/${_arch}
 
-	mkdir -p ${hdrdest}/arch/${arch}/kernel
+	mkdir -p ${hdrdest}/arch/${_arch}/kernel
 	cp arch/${_arch}/Makefile ${hdrdest}/arch/${_arch}
 	cp arch/${_arch}/kernel/asm-offsets.s ${hdrdest}/arch/${_arch}/kernel
+	cp arch/${_arch}/kernel/module.lds ${hdrdest}/arch/${_arch}/kernel
 
 	# Add md headers
 	mkdir -p ${hdrdest}/drivers/md
@@ -199,6 +200,10 @@ do_install() {
 	# add dvb headers for external modules
 	mkdir -p ${hdrdest}/include/config/dvb/
 	cp include/config/dvb/*.h ${hdrdest}/include/config/dvb/
+
+	# add clocksource
+	mkdir -p ${hdrdest}/include/clocksource
+	cp include/clocksource/*.h ${hdrdest}/include/clocksource
 
 	# Copy in Kconfig files
 	for i in $(find . -name "Kconfig*"); do
