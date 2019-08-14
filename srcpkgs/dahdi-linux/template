@@ -1,0 +1,23 @@
+# Template file for 'dahdi-linux'
+pkgname=dahdi-linux
+version=3.1.0
+revision=1
+wrksrc=dahdi-linux-3.1.0-rc1
+build_style=gnu-makefile
+#configure_args=""
+#make_build_args=""
+#make_install_args="INSTALL_MOD_PATH=/usr"
+#conf_files=""
+#make_dirs="/var/log/dir 0755 root root"
+hostmakedepends=""
+makedepends="wget rpi-kernel-headers perl"
+depends="rpi-kernel-headers"
+short_desc="DAHDI modules for Asterisk"
+maintainer=" <neil.darach@gmail.com>"
+license="GPL-3.0-or-later"
+homepage="http://google.com"
+distfiles="https://downloads.asterisk.org/pub/telephony/dahdi-linux/dahdi-linux-3.1.0-rc1.tar.gz"
+checksum="a14448836ef3159ce563ce2b3b84fb4f7f8e1a63eef2ad7066536f9843140ea2"
+post_install() {
+  mv ${DESTDIR}/lib/* ${DESTDIR}/usr/lib
+  }
