@@ -1,0 +1,31 @@
+# Template file for 'dahdi-tools'
+pkgname=dahdi-tools
+version=3.1.0
+revision=1
+wrksrc=dahdi-tools-3.1.0-rc1
+#create_wrksrc=yes
+#archs="i686 x86_64"
+build_style=gnu-configure
+#configure_args=""
+#make_build_args=""
+#make_install_args=""
+#conf_files=""
+#make_dirs="/var/log/dir 0755 root root"
+hostmakedepends=""
+makedepends="dahdi-linux newt-devel ncurses-devel libtool pkg-config automake autoconf"
+depends="dahdi-linux"
+short_desc="Userspace tools for the DAHDI kernel modules"
+maintainer=" <neil.darach@gmail.com>"
+license="GPL-3.0-or-later"
+homepage="https://asterisk.org"
+distfiles="https://downloads.asterisk.org/pub/telephony/dahdi-tools/dahdi-tools-3.1.0-rc1.tar.gz"
+checksum="236218b8dc2aeb592f1f56b90fee0bd3775b8083899a6133bb67bdebd0a1430f"
+pre_configure() {
+  autoreconf -i
+}
+post_install() {
+  mkdir -p ${DESTDIR}/usr/share/bash-completion/completions
+  mv ${DESTDIR}/etc/bash_completion.d/dahdi ${DESTDIR}/usr/share/bash-completion/completions
+  mkdir -p ${DESTDIR}/usr/lib/udev/rules.d
+  mv ${DESTDIR}/etc/udev/rules.d/* ${DESTDIR}/usr/lib/udev/rules.d
+  }
