@@ -1,23 +1,21 @@
 # Template file for 'kcgi'
 pkgname=kcgi
-version=0.10.10
+version=0.12.0
 revision=1
 build_style=configure
 configure_args="PREFIX=/usr MANDIR=/usr/share/man SBINDIR=/usr/bin"
 make_cmd="bmake"
 make_check_target="regress"
-hostmakedepends="bmake"
-checkdepends="pkg-config libcurl-devel"
+hostmakedepends="bmake which pkg-config"
+makedepends="zlib-devel"
+checkdepends="libcurl-devel"
 short_desc="Minimal CGI library for web applications in C"
 maintainer="Duncaen <duncaen@voidlinux.org>"
 license="ISC"
 homepage="http://kristaps.bsd.lv/kcgi/"
+changelog="https://kristaps.bsd.lv/kcgi/archive.html"
 distfiles="http://kristaps.bsd.lv/kcgi/snapshots/kcgi-${version}.tgz"
-checksum=ca254027809c3f4e730ec21fec92d76d709c2f2827aa7d1becc59572ead427a3
-
-case "$XBPS_TARGET_MACHINE" in
-	aarch64*) broken="sandbox-seccomp-filter.c:76:34: error: initializer element is not constant"
-esac
+checksum=d9ae096c0094d20bb68880bee79e0fde57b22f77b2a83e1e96760dd110ef8c27
 
 seccomp_audit_get_suffix() {
 	case "$1" in
@@ -27,6 +25,7 @@ seccomp_audit_get_suffix() {
 		aarch64*) echo "AARCH64" ;;
 		ppc64le*) echo "PPC64LE" ;;
 		ppc64*) echo "PPC64" ;;
+		ppc*) echo "PPC" ;;
 		*) echo "UNKNOWN" ;;
 	esac
 }

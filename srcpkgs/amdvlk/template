@@ -1,19 +1,23 @@
 # Template file for 'amdvlk'
 pkgname=amdvlk
-version=2019.Q3.3
+version=2020.Q1.4
 revision=1
-_llpc_commit=f60ebe48d60ef00e69b399a24e04d600cdcc1f0c
-_xgl_commit=6b0fbc836e01be4b8fb1990b4e31846ec19305bc
-_pal_commit=46251728a7137f399b564b0886bd9bf9888c48ef
-_llvm_commit=951ae36dc33d628235446a7abe87a1aebf6717e8
-_spvgen_commit=2f31d1170e8a12a66168b23235638c4bbc43ecdc
+_llpc_commit=7686a2ddba683f7a361460f3806b0d45e615ca76
+_xgl_commit=2db4177e78133c868e2c6b4dcc46aeb2f512163a
+_pal_commit=bb7398b1c7509a30ba4f7d947b5ad5549a4d58db
+_llvm_project_commit=5c958c70bc6366298296dc778e903f65528c3b0f
+_spvgen_commit=d16fddddf22a1eb3a3f4ce05cbcb95a337f708b1
+_MetroHash_commit=2b6fee002db6cc92345b02aeee963ebaaf4c0e2f
+_CWPack_commit=b601c88aeca7a7b08becb3d32709de383c8ee428
 archs="i686* x86_64*"
 create_wrksrc=yes
 build_wrksrc="xgl"
 build_style=cmake
-configure_args="-DBUILD_WAYLAND_SUPPORT=ON"
+configure_args="-DBUILD_WAYLAND_SUPPORT=ON
+ -DXGL_METROHASH_PATH=../../metrohash
+ -DXGL_CWPACK_PATH=../../cwpack"
 hostmakedepends="pkg-config python3 perl"
-makedepends="libxml2-devel xorg-server-devel libXrandr-devel"
+makedepends="libxml2-devel xorg-server-devel libXrandr-devel libffi-devel"
 depends="vulkan-loader"
 short_desc="AMD Open Source Driver For Vulkan"
 maintainer="John <johnz@posteo.net>"
@@ -23,28 +27,30 @@ distfiles="https://github.com/GPUOpen-Drivers/AMDVLK/archive/v-${version}.tar.gz
  https://github.com/GPUOpen-Drivers/llpc/archive/${_llpc_commit}.tar.gz
  https://github.com/GPUOpen-Drivers/xgl/archive/${_xgl_commit}.tar.gz
  https://github.com/GPUOpen-Drivers/pal/archive/${_pal_commit}.tar.gz
- https://github.com/GPUOpen-Drivers/llvm/archive/${_llvm_commit}.tar.gz
- https://github.com/GPUOpen-Drivers/spvgen/archive/${_spvgen_commit}.tar.gz"
-checksum="d2aa97caeffef43c934b73d24af3c30be640d6ffee20e27db6a58bb21c683939
- 4d6b623092215bfb8f9f01601db3de2b93cc0bf305173bafeb58c65f32967043
- fee95d0a55cbd9c34aa54c3309ad896d56c287f35bc7cd6bb25bd86f7e0985d6
- 6832551a933fd04d8b1d031cf49b86497c17c878675fc641df23c9c9e128d52b
- 50b25878e19cd8a7d15aad891463fbdac60cbb04b2a4027bc31ff9ca3da4a5f6
- cc946ad2835e502aca904c5f87802a2004eaed4729cb5c1dc29a5258d1c1e401"
+ https://github.com/GPUOpen-Drivers/llvm-project/archive/${_llvm_project_commit}.tar.gz
+ https://github.com/GPUOpen-Drivers/spvgen/archive/${_spvgen_commit}.tar.gz
+ https://github.com/GPUOpen-Drivers/MetroHash/archive/${_MetroHash_commit}.tar.gz
+ https://github.com/GPUOpen-Drivers/CWPack/archive/${_CWPack_commit}.tar.gz"
+checksum="c7c8f21cb6006302146ea16f738550ea870d6554a68183adab071d9b299fb0ea
+ 5ee4d5cf5b6eb47d5e7faf8efa64281a6d3da2fadc6501d2f49fbcab75cbc2a7
+ 312e8221e3c87fa378f757932f638aa330a9655a245d76d91ca76d58c1fe4c55
+ b738532b294838ce027703a23d1db3f0acf6098b3b614edee7726ff72f3e0899
+ 7894d545009bf1011a0d0f3e0446b4fe18c3505f7d91a79a01b2a1c0ae02c899
+ cea41a19a907b8c42209f5012b86d90382dcd58475d54b66b5e8e5d607e5a468
+ e8ecf026584dd953e39c3abba2eb04d28b28ed4577482ee70265f0d421fef398
+ 58ca397f33d62bcfecaecd89eb4ad466a6c33e1c619e5cf742822074f1f7d664"
 nocross=yes
 lib32files="/usr/share/vulkan/icd.d/amd_icd32.json"
-
-case $XBPS_TARGET_MACHINE in
-	*-musl) makedepends+=" rand48_r-devel"
-esac
 
 post_extract() {
 	mv ${wrksrc}/AMDVLK-v-${version} ${wrksrc}/AMDVLK
 	mv ${wrksrc}/xgl-${_xgl_commit} ${wrksrc}/xgl
 	mv ${wrksrc}/pal-${_pal_commit} ${wrksrc}/pal
 	mv ${wrksrc}/llpc-${_llpc_commit} ${wrksrc}/llpc
-	mv ${wrksrc}/llvm-${_llvm_commit} ${wrksrc}/llvm
+	mv ${wrksrc}/llvm-project-${_llvm_project_commit} ${wrksrc}/llvm-project
 	mv ${wrksrc}/spvgen-${_spvgen_commit} ${wrksrc}/spvgen
+	mv ${wrksrc}/MetroHash-${_MetroHash_commit} ${wrksrc}/metrohash
+	mv ${wrksrc}/CWPack-${_CWPack_commit} ${wrksrc}/cwpack
 }
 
 pre_configure() {
@@ -54,6 +60,16 @@ pre_configure() {
 	esac
 	configure_args+=" -DLLVM_TARGET_ARCH=${_arch}"
 	configure_args+=" -DLLVM_DEFAULT_TARGET_TRIPLE=${XBPS_CROSS_TRIPLET:-$XBPS_TRIPLET}"
+}
+
+pre_build() {
+	# lower burden on build servers, llvm eats too much memory
+	if [ "$XBPS_MAKEJOBS" -gt 2 ]; then
+		echo $XBPS_MAKEJOBS
+		export makejobs="-j$(( $XBPS_MAKEJOBS / 2 ))"
+		echo $XBPS_MAKEJOBS
+	fi
+
 }
 
 do_install() {

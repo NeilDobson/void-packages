@@ -1,8 +1,7 @@
 # Template file for 'cgrep'
 pkgname=cgrep
-version=6.6.28
-revision=1
-nocross=yes
+version=6.6.32
+revision=2
 build_style=haskell-stack
 stackage="lts-13.30"
 makedepends="pcre-devel"
@@ -11,6 +10,7 @@ maintainer="Orphaned <orphan@voidlinux.org>"
 license="GPL-2.0-or-later"
 homepage="https://awgn.github.io/cgrep/"
 distfiles="https://github.com/awgn/cgrep/archive/v${version}.tar.gz"
-checksum=02ef2018d73c98608340146701a7e8c84e629732487fc9dab172d770d426e350
+checksum=c45d680a2a00ef9524fc921e4c10fc7e68f02e57f4d6f1e640b7638a2f49c198
+nocross=yes
 nopie_files="/usr/bin/cgrep"
 conflicts="codesearch"

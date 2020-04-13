@@ -1,15 +1,17 @@
 # Template file for 'lowdown'
 pkgname=lowdown
-version=0.4.3
+version=0.6.4
 revision=1
 build_style=configure
 configure_args="PREFIX=/usr MANDIR=/usr/share/man"
+hostmakedepends="which"
 short_desc="Simple markdown translator"
 maintainer="Duncaen <duncaen@voidlinux.org>"
 license="ISC"
 homepage="https://kristaps.bsd.lv/lowdown/"
+changelog="https://kristaps.bsd.lv/lowdown/archive.html"
 distfiles="https://kristaps.bsd.lv/lowdown/snapshots/lowdown-${version}.tar.gz"
-checksum=25d272edd47724e6892d4f401bc8404e892d5336a8c2cc42b166312d3865ddbe
+checksum=10f7ed679fe324c000b3b234f79e5b12895ba42212807d242afdc48dad138e7a
 
 post_install() {
 	vlicense LICENSE.md

@@ -1,21 +1,18 @@
 # Template file for 'kxmlrpcclient'
 pkgname=kxmlrpcclient
-version=5.60.0
+version=5.69.0
 revision=1
 build_style=cmake
 configure_args="-DBUILD_TESTING=OFF"
-hostmakedepends="kcoreaddons extra-cmake-modules"
+hostmakedepends="kcoreaddons extra-cmake-modules gettext
+ qt5-host-tools qt5-qmake python3"
 makedepends="kio-devel"
 short_desc="KDE XML-RPC client"
 maintainer="John <johnz@posteo.net>"
 license="LGPL-2.1-or-later, BSD-2-Clause"
 homepage="https://projects.kde.org/projects/frameworks/kxmlrpcclient"
 distfiles="${KDE_SITE}/frameworks/${version%.*}/${pkgname}-${version}.tar.xz"
-checksum=e5f3bef626027b3cd84873362a5c6ee26692ee99a394ef9d944741670b1ca322
-
-if [ "$CROSS_BUILD" ]; then
-	hostmakedepends+=" qt5-host-tools qt5-qmake python"
-fi
+checksum=bce2dcf7a8290168c6057343e82ea0b1d0cce4f51cf8f161dc99e951c5d7c74e
 
 post_install() {
 	vlicense COPYING.BSD

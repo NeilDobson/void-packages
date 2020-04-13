@@ -1,10 +1,11 @@
 # Template file for 'bomi'
 pkgname=bomi
 version=0.9.11
-revision=13
+revision=14
 build_style=configure
 configure_args="--disable-systemd --release --prefix=/usr"
-hostmakedepends="pkg-config curl perl"
+# does not build using py3.8 because of waf issues
+hostmakedepends="python pkg-config curl perl which"
 makedepends="qt5-devel MesaLib-devel ffmpeg-devel mpg123-devel libass-devel
  libdvdread-devel libdvdnav-devel libbluray-devel icu-devel libxcb-devel
  xcb-util-wm-devel libva-devel libva-glx-devel alsa-lib-devel libvdpau-devel
@@ -12,7 +13,7 @@ makedepends="qt5-devel MesaLib-devel ffmpeg-devel mpg123-devel libass-devel
  fribidi-devel libcdio-devel libcdio-paranoia-devel pulseaudio-devel
  samba-devel libchardet-devel"
 depends="qt5-quickcontrols"
-short_desc="A powerful and easy-to-use Qt5 multimedia player"
+short_desc="Powerful and easy-to-use Qt5 multimedia player"
 maintainer="Jakub Skrzypnik <jot.skrzyp@gmail.com>"
 license="GPL-2.0-or-later"
 homepage="https://bomi-player.github.io/"

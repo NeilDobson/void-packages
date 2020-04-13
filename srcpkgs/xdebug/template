@@ -1,6 +1,6 @@
 # Template file for 'xdebug'
 pkgname=xdebug
-version=2.7.1
+version=2.9.3
 revision=1
 build_style=gnu-configure
 hostmakedepends="autoconf"
@@ -10,7 +10,7 @@ maintainer="Alexander Mamay <alexander@mamay.su>"
 license="PHP-3.0"
 homepage="http://xdebug.org"
 distfiles="http://xdebug.org/files/${pkgname}-${version,,}.tgz"
-checksum=b7e9d1453975e0217667c82a9e68d4aabb307b18e8f2f70432f70d75907f24c3
+checksum=a63f567f2238d75a2244c2a4bd6f5abee817280b3567f9006c99481488dc977c
 
 pre_configure() {
 	phpize

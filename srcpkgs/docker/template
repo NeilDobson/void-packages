@@ -1,9 +1,9 @@
 # Template file for 'docker'
 pkgname=docker
-version=19.03.1
+version=19.03.8
 revision=1
 wrksrc="${pkgname}-ce-${version}"
-hostmakedepends="git go pkg-config curl cmake"
+hostmakedepends="git go pkg-config curl cmake tar"
 makedepends="libbtrfs-devel sqlite-devel device-mapper-devel libseccomp-devel
  libapparmor-devel libltdl-devel"
 depends="containerd runc"
@@ -12,14 +12,14 @@ maintainer="Andrea Brancaleoni <abc@pompel.me>"
 license="Apache-2.0"
 homepage="http://www.docker.io"
 distfiles="https://github.com/docker/docker-ce/archive/v${version}.tar.gz"
-checksum=dad9123e203751ce9981bc34773721593655231c32412e310e748b18f10f0053
+checksum=781c69e00e98f64fb167ee61de764882bd4926a873d98ce6f370d3cd3435b501
 
 # These are required at run-time.
 depends+=" iptables xz git"
 nopie=yes
 nostrip=yes
 nocross=yes
-archs="armv7l* x86_64* ppc64le*"
+archs="aarch64* armv7l* x86_64* ppc64le*"
 system_groups="docker"
 
 _docker_components="tini proxy dockercli"

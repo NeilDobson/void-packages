@@ -1,6 +1,6 @@
 # Template file for 'barrier'
 pkgname=barrier
-version=2.3.0
+version=2.3.2
 revision=1
 build_style=cmake
 configure_args="-DBARRIER_REVISION=00000000 -DBARRIER_VERSION_STAGE=RELEASE"
@@ -12,7 +12,7 @@ maintainer="John <johnz@posteo.net>"
 license="GPL-2.0-only"
 homepage="https://github.com/debauchee/barrier"
 distfiles="https://github.com/debauchee/barrier/archive/v${version}.tar.gz"
-checksum=2f5881d05cb646ef551752a0104de13cfbcd9ca12e116bbb444a6537689a06f9
+checksum=6b92a70c5f4d625065842d133386982ec2ad1db2a809af47e46ab8ce2acd39b5
 
 do_install() {
 	vbin build/bin/barrier

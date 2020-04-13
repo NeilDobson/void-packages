@@ -1,14 +1,17 @@
 # Template file for 'rust'
 # partially adapted from Alpine/Adélie's Rust APKBUILD
+#
+# Permission to use rust and cargo trademark is granted.
+# See: https://github.com/rust-lang/core-team/issues/4
 pkgname=rust
-version=1.36.0
-revision=1
-_rust_dist_version=1.36.0
-_cargo_dist_version=0.37.0
+version=1.41.1
+revision=2
+_rust_dist_version=1.40.0
+_cargo_dist_version=0.41.0
 # Always make sure custom distfiles used for bootstrap are
 # uploaded to https://alpha.de.repo.voidlinux.org/distfiles/
 wrksrc="rustc-${version}-src"
-hostmakedepends="cmake curl pkg-config python3"
+hostmakedepends="cmake curl pkg-config python3 tar"
 makedepends="libffi-devel ncurses-devel libxml2-devel zlib-devel llvm"
 depends="rust-std"
 short_desc="Safe, concurrent, practical systems language"
@@ -16,7 +19,7 @@ maintainer="Enno Boland <gottox@voidlinux.org>"
 license="MIT, Apache-2.0"
 homepage="https://www.rust-lang.org/"
 distfiles="https://static.rust-lang.org/dist/rustc-${version}-src.tar.gz"
-checksum=04c4e4d7213d036d6aaed392841496d272146312c0290f728b7400fccd15bb1b
+checksum=38c93d016e6d3e083aa15e8f65511d3b4983072c0218a529f5ee94dd1de84573
 lib32disabled=yes
 patch_args="-Np1"
 
@@ -31,8 +34,9 @@ if [ "$CROSS_BUILD" ]; then
 else
 	_bootstrap_url="https://static.rust-lang.org/dist"
 
+	# 32-bit ppc needs custom bootstrap for now because of patches
 	case "$XBPS_MACHINE" in
-		x86_64*|i686|ppc64le|ppc) ;;
+		x86_64*|i686|ppc64le) ;;
 		ppc*) _bootstrap_url="https://alpha.de.repo.voidlinux.org/distfiles" ;;
 		*) broken="unsupported host: ${XBPS_MACHINE}" ;;
 	esac
@@ -46,57 +50,57 @@ else
 	case "$XBPS_MACHINE" in
 		i686)
 			checksum+="
-			 ad86a75cc8a02a0129df480ccb28082985215f4b5558a42881777691ae1d3ff3
-			 a78f7bdbce0a960f3334c6c639cbe96f05b9b74df26cda9a5161834098119217
-			 6835a73e2ce17e11eda5393133dd7c78bc41bae5a09784e5327648f14340fd48"
+			 257e4789043098a5e3b4fa85ea988019f37d640a10f83d39ada00fb23e057b8a
+			 beab29565d12a6b9db4ef471c34d4c034295760095f7edc3f7b6c51fc08589a0
+			 c48bc132f4025ff39b1b6dc52aef9d406c3f926ce05fe92d943ceab7a5fd6058"
 			;;
 		x86_64)
 			checksum+="
-			 fff0158da6f5af2a89936dc3e0c361077c06c2983eb310615e02f81ebbde1416
-			 ce8e12684b568a8a4f7d346a743383429849cf3f028f5712ad3d3e31590c8db3
-			 d20fa121951339d5492cf8862f8a7af59efc99d18f3c27b95ab6d4658b6a7d67"
+			 b1c00618b7a98156e88b14682508a503284f85748eab23de749a20dcc8847111
+			 5a0b14a51f51b0194f70a2023749d9cb49c3b2e11f0d4c8232960b91fad336ac
+			 9b6ae643fa240c5ecbc1dc390f4020b6a683f25bac6f7437ebd4b9d32a8d0b6c"
 			;;
 		x86_64-musl)
 			checksum+="
-			 04c15e34bdfd17136b924baa4f93cfbfe64739964b57f5a13ada8e91f9239076
-			 70d0cc38cc829603c81812c59435ef85456a93962bea20deb12f0634e87fbaf7
-			 53975d91e11569f2255d8e30176f05f6976cd810725197a527b0e7ad547ca70c"
+			 769b9e31557fcc0ea2a661f88b679d3dbd62b537807c7b3c75ac6816a1be4fa3
+			 c647bb7f399b3d18e345b2dab1fb073470582a9298e83d8648f6661544df7279
+			 848646326474392bdac70a5bfa06efda4c36e2bbbf088f07456f98c7575844e1"
 			;;
 		ppc64le)
 			checksum+="
-			 702818334ed9f01f60a433aa424784ec9b3785826cdaf03b0f69d03aded98df6
-			 db7a9a06b8b1b84d6fe10bc1e2e136234e31bfaa77499b9df36e2d441ef1b856
-			 4cda7686160f6981e936229703e8e2e756c74f390245f2ad9e356bbbed28a2c9"
+			 aa07a07ad272de825da8c18ad8dc4143a25bd28e5538d68c3bced53f060432b4
+			 4eb3141fb6c3d3e101b5d4493664c9a01d4bb9eebdf4b96f5c26a81188c2452d
+			 7705f21d938a72ba6f01818661b2dea29183209940a335f18d1761e1e03d3710"
 			;;
 		ppc64le-musl)
 			checksum+="
-			 e04239f9c0f230249412ca814f2f954e269c9724fe5741d87f6dc76ddaa15251
-			 98e8b4e6335bdb8cd387c8681686e20d9aa230bcf16ba0ea7cf3c1818d964425
-			 d2690135522db9fdc6efa2f432e5719b8b70abc94e91db278b84be834a75bf72"
+			 2c8ffeaa23d8ae0e1776af068bd92ba5cd15973696956a2b58c215a940721e67
+			 c40f696c8afdcaafec50ddc29b9d8c836efa01b681e8ca48d09fcf79576ee039
+			 0fbe481d284a14b84cc63ccb50caeb248200f238d2c3e449c2b8a8bf49c951ce"
 			;;
 		ppc64)
 			checksum+="
-			 4328cd52d37df39b78c6223a7a6d07129ef9861efa67dbdadbcfe6c991e0febf
-			 800f27805adef749219f9507497dbadebdac2d5c50f951ca1426d4d447e7f318
-			 8b2f7d5da611a21dd7e0b4238b9aca6ee32f1e49d8fe831435301f11a29b12de"
+			 0f4d02f2d21d8f4b23829502130c89599f2315bb9adcee4f1b5109ee68a187ab
+			 8edd65b1f53485caa134d1625131e76f7ca072366cc5df3e2761a39f52f7e83f
+			 23a7967b0c1c762cdbea4f850cacbb462e386977203c0d5ff060275c526d80d7"
 			;;
 		ppc64-musl)
 			checksum+="
-			 7cef3f67652607e4f6ed09ff6eb54ee0a7485ae5491a2c015ef9357aadc40295
-			 6f2dc455113a12b2f5fcefbda6e225ad568e750b8f900de5d326cf2c05e45ec9
-			 131db0127366665b2ae55327155c171e99c2eddfb4bcdd7e5cd2663ada109bd5"
+			 4645a4bb0d78da07c8dba1edc2769382a94dc3d8fbdd48e105a5c8dd20170e21
+			 0dbf82f8c24140f17fda36811861c9c3aa361f2256c5274a11eb4a1f183c7f3a
+			 d5a808fdb50068a14d6578f052c9e21ae7881d4ecdcf9e098c5e2c2b1ae65786"
 			;;
 		ppc)
 			checksum+="
-			 6c47ae44afc4567fd5584ff8f23c6d0ee1680e66b2ce91cc891571e973097a99
-			 b22c7104c1bea83aef920140a25be974c3e08dd600431901346908916be46f43
-			 856fcb63f6ebeab67038fe3fc96ee0911353b1ee19cabcb0496c7d419de0d531"
+			 40121c3a6ec199338e7139e03e917a93290b7623334740d4d25cd1c8092f3de1
+			 c2b17cfe8b25d23b348b40e5802a4e369f691abe6ddbd4372df0d660eb100398
+			 295030192cf5b7e1fce75845a1961619a5f701185400ad816cf950d4e18f0646"
 			;;
 		ppc-musl)
 			checksum+="
-			 181c81346bc75d6316d08efa242f49c3d3e70fa0c480e673c9bc7209c63ca6e6
-			 4449b886359efe7fb39d75a086fc25520730f96932588e120abbf04387ac8aad
-			 119dba3538f6c1d1164b720b238acac598e1924d943ebbdf3c7113ec3cbd8a2a"
+			 c5b743370ce140e95d413b20734d26ac22697b99455262cef801883f5c732019
+			 8061486273c602ac29c3e98aaa3a6d1114d16b9973e051f127e922232fef2270
+			 91cc5d6f0192f68d5053fb460dd8347b28cb29b4a63a6e648d6b754795b5c4e8"
 			;;
 	esac
 fi
@@ -132,13 +136,13 @@ post_patch() {
 
 	# clear out all the checksum nonsense of patched vendor crates
 	_clear_vendor_checksums libc
-	_clear_vendor_checksums lzma-sys
 	_clear_vendor_checksums typenum
 	_clear_vendor_checksums backtrace-sys
+	_clear_vendor_checksums lzma-sys
 }
 
 do_configure() {
-	local _rust_root _local_rebuild _use_debug _use_rpath
+	local _rust_root _local_rebuild _use_debug _use_debug_rustc _use_rpath
 
 	if [ "$CROSS_BUILD" ]; then
 		_rust_root="/usr"
@@ -148,12 +152,18 @@ do_configure() {
 		_local_rebuild="false"
 	fi
 
-	# emit debug info, enabled when generating debug packages
+	# disable rustc debug info as it bloats up rust-std significantly
+	# set to 1 or 2 if you wish to have debug info for rustc, it won't
+	# link on 32-bit platforms though (too big)
+	_use_debug_rustc="0"
+
+	# use stdlib debug level 2 for all platforms when generating debug
 	if [ -n "$XBPS_DEBUG_PKGS" ]; then
-		_use_debug="true"
+		_use_debug="2"
 	else
-		_use_debug="false"
+		_use_debug="0"
 	fi
+
 	# if true, the binaries will be built with rpath, so the binaries will be
 	# usable directly from the build directory, this is not desirable for
 	# packaging but is useful when building bootstrap binaries
@@ -179,15 +189,23 @@ do_configure() {
 		prefix = "/usr"
 		[rust]
 		codegen-units = 1
-		debuginfo = ${_use_debug}
-		debuginfo-lines = ${_use_debug}
-		debuginfo-only-std = ${_use_debug}
-		debuginfo-tools = ${_use_debug}
+		codegen-units-std = 1
+		debug-assertions = false
+		debuginfo-level = ${_use_debug}
+		debuginfo-level-rustc = ${_use_debug_rustc}
+		debuginfo-level-tests = 0
 		backtrace = true
+		incremental = false
+		parallel-compiler = false
 		channel = "stable"
 		rpath = ${_use_rpath}
+		verbose-tests = true
+		dist-src = false
 		jemalloc = false
+		llvm-libunwind = false
 		codegen-tests = false
+		[dist]
+		src-tarball = false
 		[target.${RUST_BUILD}]
 		llvm-config = "/usr/bin/llvm-config"
 		crt-static = false
@@ -255,13 +273,17 @@ do_install() {
 	 -C "$DESTDIR/usr" --strip-components=2 --exclude=manifest.in
 	tar xf build/dist/rust-std-${version}-${RUST_TARGET}.tar.gz \
 	 -C "$DESTDIR/usr/lib" --strip-components=3 --exclude=manifest.in
+	tar xf build/dist/rustc-dev-${version}-${RUST_TARGET}.tar.gz \
+         -C "$DESTDIR/usr/lib" --strip-components=3 --exclude=manifest.in
 
 	vlicense COPYRIGHT
 	vlicense LICENSE-APACHE
 	vlicense LICENSE-MIT
 
 	cd ${DESTDIR}/usr/lib
-	ln -sf rustlib/*/lib/*.so .   # symlinks instead of copies
+	# symlinks instead of copies
+	mv *.so rustlib/${RUST_TARGET}/lib
+	ln -sf rustlib/${RUST_TARGET}/lib/*.so .
 }
 
 rust-doc_package() {

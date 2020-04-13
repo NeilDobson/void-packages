@@ -1,17 +1,17 @@
 # Template file for 'ell'
 pkgname=ell
-version=0.20
+version=0.30
 revision=1
 build_style=gnu-configure
 configure_args="--enable-glib"
 hostmakedepends="pkg-config"
 makedepends="libglib-devel"
 short_desc="Linux library for embedded development"
-maintainer="maxice8 <thinkabit.ukim@gmail.com>"
+maintainer="Peter Bui <pbui@github.bx612.space>"
 license="GPL-2.0-only"
 homepage="https://01.org/ell"
-distfiles="https://mirrors.edge.kernel.org/pub/linux/libs/ell/ell-${version}.tar.xz"
-checksum=d4aa08915f4058ecaab509dffbe22665d71dba6fe9626caff63c0e5f4b78a394
+distfiles="${KERNEL_SITE}/libs/${pkgname}/${pkgname}-${version}.tar.xz"
+checksum=51cf8cc66a9d1038e41f7d619ea5660aa4476904496562b2d45ca79370ca4a5e
 
 ell-devel_package() {
 	depends="ell-${version}_${revision}"

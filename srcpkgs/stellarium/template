@@ -1,6 +1,6 @@
 # Template file for 'stellarium'
 pkgname=stellarium
-version=0.19.1
+version=0.20.0
 revision=1
 build_style=cmake
 hostmakedepends="perl qt5-qmake qt5-host-tools"
@@ -8,11 +8,11 @@ makedepends="qt5-location-devel qt5-multimedia-devel qt5-script-devel
  qt5-serialport-devel qt5-tools-devel"
 depends="desktop-file-utils ${pkgname}-data"
 short_desc="Open Source Planetarium"
-maintainer="Juan RP <xtraeme@voidlinux.org>"
+maintainer="Orphaned <orphan@voidlinux.org>"
 license="GPL-2.0-or-later"
-homepage="https://www.stellarium.org/"
+homepage="https://stellarium.org/"
 distfiles="https://github.com/Stellarium/stellarium/releases/download/v${version}/stellarium-${version}.tar.gz"
-checksum=0f25ad2acb59b75a49568c82123219aed5a14252c2ef39d0444540057d2cfb68
+checksum=07ed1785d28f761511dc22f9b09ce70e96b5113fc7769fcdf4478f7a5a035370
 
 stellarium-data_package() {
 	short_desc+=" - data files"

@@ -1,6 +1,6 @@
 # Template file for 'cargo-edit'
 pkgname=cargo-edit
-version=0.3.3
+version=0.6.0
 revision=1
 build_style=cargo
 hostmakedepends="pkg-config"
@@ -10,7 +10,7 @@ maintainer="Jan Christian Grünhage <jan.christian@gruenhage.xyz>"
 license="MIT"
 homepage="https://github.com/killercup/cargo-edit"
 distfiles="https://github.com/killercup/cargo-edit/archive/v${version}.tar.gz"
-checksum=8b5df34e2df8002e9777daa983eef389d302526a0dce5e7a70a3cccf780b0064
+checksum=b91161dcb14d86bc605778cc7fb4d6f6333305fc6cbe84fc6717f1e682678200
 
 post_install() {
 	vlicense LICENSE

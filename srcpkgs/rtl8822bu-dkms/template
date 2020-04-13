@@ -1,17 +1,17 @@
 # Template file for 'rtl8822bu-dkms'
 pkgname=rtl8822bu-dkms
-version=20190427
+version=20200407
 revision=1
-_gitrev=dbbf4f7c3527f1bff38054349f01a4a8438db0f4
+_gitrev=9438d453ec5b4878b7d4a2b4bcf87b37df09c3fb
 archs=noarch
 wrksrc="rtl8822bu-${_gitrev}"
 depends="dkms"
 short_desc="Realtek 8822BU USB WiFi driver (DKMS)"
-maintainer="Juan RP <xtraeme@voidlinux.org>"
+maintainer="Orphaned <orphan@voidlinux.org>"
 license="GPL-2.0-only"
 homepage="https://www.tp-link.com"
 distfiles="https://github.com/EntropicEffect/rtl8822bu/archive/${_gitrev}.tar.gz"
-checksum=96bd6dcf9a285fb7ebac7575bc1e8a28577c200dc1c7ec2abae4005181ef0de5
+checksum=deaec219cc5921215523de6501966bcc3dd314e6e9a646161ee2deb5ce895662
 dkms_modules="88x2bu ${version}"
 
 do_install() {

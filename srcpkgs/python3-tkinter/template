@@ -1,13 +1,13 @@
-# Template file for 'python3-tkinter'.
+# Template file for 'python3-tkinter'
 #
 # THIS PKG MUST BE SYNCHRONIZED WITH "srcpkgs/python3"; IT IS SPLITTED TO AVOID
 # A CYCLIC DEPENDENCY: python3 -> tk -> libX11 -> libxcb -> xcb-proto -> python3
 #
 
-_desc="Interpreted, interactive, object-oriented programming language"
+_desc="Python programming language"
 
 pkgname=python3-tkinter
-version=3.6.8
+version=3.8.2
 revision=1
 wrksrc="Python-${version}"
 pycompile_dirs="
@@ -18,15 +18,14 @@ hostmakedepends="pkg-config"
 makedepends="libffi-devel readline-devel gdbm-devel libressl-devel expat-devel
  sqlite-devel bzip2-devel zlib-devel liblzma-devel tk-devel"
 short_desc="${_desc} - GUI toolkit for Python3"
-maintainer="Juan RP <xtraeme@voidlinux.org>"
+maintainer="Orphaned <orphan@voidlinux.org>"
 homepage="https://www.python.org"
 license="Python-2.0"
 distfiles="https://www.python.org/ftp/python/${version}/Python-${version}.tar.xz"
-checksum=35446241e995773b1bed7d196f4b624dadcadc8429f26282e756b2fb8a351193
+checksum=2646e7dc233362f59714c6193017bb2d6f7b38d6ab4a0cb5fbac5c36c4d845df
 
 pre_configure() {
-	# Ensure that internal copies of zlib, expat and libffi are not used.
-	rm -r Modules/zlib
+	# Ensure that internal copies of expat and libffi are not used.
 	rm -r Modules/expat
 	rm -r Modules/_ctypes/{darwin,libffi}*
 }
@@ -36,8 +35,8 @@ do_configure() {
 	if [ "$CROSS_BUILD" ]; then
 		mkdir -p host-build
 		cd host-build
-		env -i PATH=$PATH CFLAGS=-Os ../configure
-		env -i PATH=$PATH make ${makejobs} python
+		env -i PATH=$PATH XBPS_ARCH=$XBPS_ARCH CFLAGS=-Os ../configure
+		env -i PATH=$PATH XBPS_ARCH=$XBPS_ARCH make ${makejobs} python
 		mkdir -p ../hostpython
 		mv python ../hostpython
 		cd ..
@@ -72,7 +71,7 @@ do_install() {
 		mv ${wrksrc}/${pkgname}-${version}-install/usr/lib/python${version%.*}/${lib} \
 			${DESTDIR}/usr/lib/python${version%.*}/
 	done
-	mv ${wrksrc}/${pkgname}-${version}-install/usr/${_libdir}/python${version%.*}/lib-dynload/_tkinter.cpython-*m*.so \
+	mv ${wrksrc}/${pkgname}-${version}-install/usr/${_libdir}/python${version%.*}/lib-dynload/_tkinter.cpython-*.so \
 		${DESTDIR}/usr/lib/python${version%.*}/lib-dynload/
 	ln -sf idle${version%.*} ${DESTDIR}/usr/bin/idle3
 }

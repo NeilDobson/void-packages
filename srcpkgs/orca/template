@@ -1,10 +1,9 @@
 # Template file for 'orca'
 pkgname=orca
-version=3.32.0
-revision=2
+version=3.36.1
+revision=1
 archs=noarch
 build_style=gnu-configure
-pycompile_module="orca"
 hostmakedepends="intltool itstool pkg-config"
 makedepends="at-spi2-atk-devel liblouis-devel python3-gobject-devel"
 depends="desktop-file-utils gst-plugins-good1 hicolor-icon-theme liblouis
@@ -14,7 +13,7 @@ maintainer="Enno Boland <gottox@voidlinux.org>"
 license="GPL-2.0-or-later"
 homepage="https://wiki.gnome.org/Projects/Orca"
 distfiles="${GNOME_SITE}/${pkgname}/${version%.*}/${pkgname}-${version}.tar.xz"
-checksum=3130268296fa2c115acc4b37f3520967f06abd402251403d1ca507071efd5816
+checksum=c1ac648b6be31488c26ff959114287869df9ce3ca21999e40ded87741c98831f
 
 if [ "$CROSS_BUILD" ]; then
 	hostmakedepends+=" python3-gobject-devel"

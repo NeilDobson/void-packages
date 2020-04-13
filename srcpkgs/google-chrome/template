@@ -1,5 +1,5 @@
 # Template file for 'google-chrome'
-_chromeVersion=76.0.3809.100
+_chromeVersion=81.0.4044.92
 _chromeRevision=1
 _channel=stable
 
@@ -8,9 +8,10 @@ version="${_chromeVersion}.${_chromeRevision}"
 revision=1
 maintainer="Michael Aldridge <maldridge@voidlinux.org>"
 homepage="https://www.google.com/chrome/"
-license="chrome"
+license="custom:chrome"
 short_desc="Attempt at creating a safer, faster, and more stable browser"
 archs="x86_64"
+hostmakedepends="curl tar xz python3 python3-html2text python3-setuptools"
 repository=nonfree
 restricted=yes
 nostrip=yes
@@ -18,9 +19,10 @@ nostrip=yes
 _baseUrl="https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable"
 _filename="google-chrome-${_channel}_${_chromeVersion}-${_chromeRevision}_amd64.deb"
 _chromeUrl="${_baseUrl}/${_filename}"
+_licenseUrl="https://www.google.com/intl/en/chrome/privacy/eula_text.html"
 
 distfiles="$_chromeUrl"
-checksum=1dbf606dfa051a927fbd9a241a9032148d25be0851b2f27849a26ca81fa6b9b0
+checksum=e2b8dcb8aa9249b00c5f2cef5e755152a249b891bd38d7a0eb814375594ae8c5
 
 do_extract() {
 	mkdir -p ${DESTDIR}
@@ -31,7 +33,7 @@ do_install() {
 	tar xf data.tar.xz -C ${DESTDIR}
 
 	# Install the icons
-	for size in 16 22 24 32 48 64 128 256; do
+	for size in 16 24 32 48 64 128 256; do
 		# Create the google chrome xdg directory
 		mkdir -p ${DESTDIR}/usr/share/icons/hicolor/${size}x${size}/apps
 
@@ -46,4 +48,9 @@ do_install() {
 	# Remove the Debian/Ubuntu crontab
 	rm -rf ${DESTDIR}/etc
 	rm -rf ${DESTDIR}/opt/google/chrome/cron
+}
+
+post_install() {
+	curl ${_licenseUrl} | html2text >> google-chrome-eula.md
+	vlicense google-chrome-eula.md
 }

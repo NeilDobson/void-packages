@@ -1,6 +1,6 @@
 # Template file for 'mate-desktop'
 pkgname=mate-desktop
-version=1.22.1
+version=1.24.0
 revision=1
 build_style=gnu-configure
 build_helper="gir"
@@ -10,11 +10,11 @@ hostmakedepends="pkg-config intltool itstool glib-devel librsvg-utils"
 makedepends="gtk+3-devel dconf-devel libXrandr-devel startup-notification-devel"
 depends="dconf hicolor-icon-theme dejavu-fonts-ttf"
 short_desc="Library with common API for various MATE modules"
-maintainer="Juan RP <xtraeme@voidlinux.org>"
+maintainer="Orphaned <orphan@voidlinux.org>"
 license="GPL-2.0-or-later"
 homepage="https://mate-desktop.org"
 distfiles="https://pub.mate-desktop.org/releases/${version%.*}/${pkgname}-${version}.tar.xz"
-checksum=203be6a518a1c0f9afd077a977be939c11afe9f56c5dac58c69a958292c924c3
+checksum=afa93116ad5bdf55091341ae5426e4418ff8980c5c17dc6cd1258c6f8d5c8b50
 
 # Package build options
 build_options="gir"

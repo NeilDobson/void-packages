@@ -1,10 +1,10 @@
-# Template file for 'gscan2pdf'
+# Template file for 'gscan2pdf'.
 pkgname=gscan2pdf
-version=2.5.5
+version=2.6.7
 revision=1
 archs=noarch
 build_style=perl-module
-hostmakedepends="perl"
+hostmakedepends="perl gettext"
 makedepends="ImageMagick djvulibre libmagick-perl perl-Config-General
  perl-Data-UUID perl-Date-Calc perl-Filesys-Df perl-Font-TTF perl-GooCanvas2
  perl-Gtk3-SimpleList perl-HTML-Parser perl-IO-String perl-Image-Sane
@@ -17,7 +17,7 @@ maintainer="Helmut Pozimski <helmut@pozimski.eu>"
 license="GPL-3.0-or-later"
 homepage="http://gscan2pdf.sourceforge.net"
 distfiles="${SOURCEFORGE_SITE}/${pkgname}/${pkgname}-${version}.tar.xz"
-checksum=68570af787b04f8425091a1cfe5a53f34dab0384b28a2907151d22737695d03d
+checksum=f42e1ec07b48312f4b6ab1549126b468e73b94fb39e1c1c434dc8859f5492457
 nocross=yes
 
 do_check() {

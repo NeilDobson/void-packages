@@ -1,15 +1,15 @@
 # Template file for 'wine'
 pkgname=wine
-version=4.13
+version=5.6
 revision=1
 build_style=gnu-configure
 configure_args="--without-gstreamer"
 short_desc="Run Microsoft Windows applications"
-maintainer="Andrea Brancaleoni <abc@pompel.me>"
+maintainer="Helmut Pozimski <helmut@pozimski.eu>"
 license="LGPL-2.1-or-later"
 homepage="http://www.winehq.org/"
 distfiles="https://dl.winehq.org/wine/source/${version%%.*}.x/wine-${version}.tar.xz"
-checksum=79174151cbc403250d4727dc9c55df8d6a60a2fe28343642c2452a92c6431d67
+checksum=50198a7e71d58fbdc521bbfde8b45bd9727b6cff5c8f101b586bc455d1bc00e6
 
 nopie_files="/usr/bin/wine"
 

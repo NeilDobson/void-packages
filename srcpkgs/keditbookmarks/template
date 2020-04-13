@@ -1,15 +1,18 @@
 # Template file for 'keditbookmarks'
 pkgname=keditbookmarks
-version=19.04.3
+version=19.12.3
 revision=1
 build_style=cmake
-configure_args="-DBUILD_TESTING=OFF"
-hostmakedepends="extra-cmake-modules kcoreaddons kconfig kdoctools
+hostmakedepends="extra-cmake-modules gettext kcoreaddons kconfig kdoctools
  pkg-config qt5-host-tools qt5-qmake"
 makedepends="kparts-devel qt5-devel"
 short_desc="Bookmarks editor"
 maintainer="Piotr Wójcik <chocimier@tlen.pl>"
 license="GPL-2.0-or-later, GFDL-1.2-only"
 homepage="https://www.kde.org/"
-distfiles="${KDE_SITE}/applications/${version}/src/keditbookmarks-${version}.tar.xz"
-checksum=b255d6f85d34abf635857f922b059c3311fd7859262039bec0c90b6538c5e92e
+distfiles="${KDE_SITE}/release-service/${version}/src/keditbookmarks-${version}.tar.xz"
+checksum=1c5efb63eb0a714942677eb03f91ae0bbd10731eace5471ea12ae9d3296b6b05
+
+pre_check() {
+	export QT_QPA_PLATFORM=offscreen
+}

@@ -1,11 +1,10 @@
 # Template file for 'python-s3transfer'
 pkgname=python-s3transfer
-version=0.2.0
+version=0.3.3
 revision=1
 archs=noarch
 wrksrc="s3transfer-${version}"
 build_style=python-module
-pycompile_module="s3transfer"
 hostmakedepends="python-setuptools python3-setuptools"
 depends="python-botocore"
 short_desc="Amazon S3 Transfer Manager (Python2)"
@@ -13,19 +12,13 @@ maintainer="Robert Lowry <bobertlo@gmail.com>"
 license="Apache-2.0"
 homepage="https://github.com/boto/s3transfer"
 distfiles="https://github.com/boto/s3transfer/archive/${version}.tar.gz"
-checksum=fe96e25f89f405e22a0283df8eefe1b0d2c998eab01c6c8f39923e16faf78522
-
-post_install() {
-	vlicense LICENSE.txt
-}
+checksum=0c8b0f7aaf32173d1475df0a453bfdc37be8207ea15c1d8415a590ef3986fc51
 
 python3-s3transfer_package() {
 	archs=noarch
 	depends="python3-botocore"
-	pycompile_module="s3transfer"
 	short_desc="${short_desc/Python2/Python3}"
 	pkg_install() {
 		vmove "usr/lib/python3*"
-		vlicense LICENSE.txt
 	}
 }

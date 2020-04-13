@@ -1,6 +1,6 @@
 # Template file for 'oniguruma'
 pkgname=oniguruma
-version=6.9.2
+version=6.9.4
 revision=1
 wrksrc="onig-${version}"
 build_style=gnu-configure
@@ -9,7 +9,7 @@ maintainer="John Regan <john@jrjrtech.com>"
 license="BSD-2-Clause"
 homepage="https://github.com/kkos/oniguruma"
 distfiles="https://github.com/kkos/oniguruma/releases/download/v${version}/onig-${version}.tar.gz"
-checksum=db7addb196ecb34e9f38d8f9c97b29a3e962c0e17ea9636127b3e3c42f24976a
+checksum=4669d22ff7e0992a7e93e116161cac9c0949cd8960d1c562982026726f0e6d53
 
 post_install() {
 	vlicense COPYING
@@ -35,4 +35,3 @@ oniguruma-doc_package() {
 		vcopy "doc/*" usr/share/doc/${sourcepkg}
 	}
 }
-

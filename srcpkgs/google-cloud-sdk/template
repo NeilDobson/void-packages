@@ -1,16 +1,17 @@
 # Template file for 'google-cloud-sdk'
 pkgname=google-cloud-sdk
-version=256.0.0
+version=288.0.0
 revision=1
 archs=noarch
 wrksrc=$pkgname
-depends="python"
+depends="python3"
 short_desc="Command-line interface for Google Cloud Platform products and services"
 maintainer="Daniel Santana <daniel@santana.tech>"
 license="Apache-2.0"
 homepage="https://cloud.google.com/sdk"
 distfiles="https://dl.google.com/dl/cloudsdk/release/downloads/for_packagers/linux/${pkgname}_${version}.orig.tar.gz"
-checksum=b53debf3c1a9a0d3f6e3df6f8dce6aa0d9d9010221b604ef5140c9453b28d140
+checksum=2d5ba2acc122b86a1260b958cbf19fa18daf487a2a719eb4d881f9561abb4f00
+python_version=3
 
 do_install() {
 	vmkdir usr/lib/$pkgname
@@ -40,5 +41,4 @@ do_install() {
 	vdoc README
 	vdoc VERSION
 	vdoc RELEASE_NOTES
-	vlicense LICENSE
 }

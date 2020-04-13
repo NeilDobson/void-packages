@@ -1,7 +1,7 @@
 # Template file for 'audit'
 pkgname=audit
 version=2.8.5
-revision=1
+revision=3
 build_style=gnu-configure
 configure_args="--libdir=/usr/lib --enable-shared=audit --enable-gssapi-krb5
  --with-apparmor --with-libcap-ng --with-python3"
@@ -10,7 +10,7 @@ makedepends="mit-krb5-devel libldap-devel libapparmor-devel libcap-ng-devel
  python3-devel"
 make_dirs="/var/log/audit 0700 root root"
 short_desc="Linux Security Auditing Framework"
-maintainer="Cameron Nemo <camerontnorman@gmail.com>"
+maintainer="Cameron Nemo <cnemo@tutanota.com>"
 license="GPL-2.0-or-later, LGPL-2.0-or-later"
 homepage="https://people.redhat.com/sgrubb/audit"
 distfiles="${homepage}/${pkgname}-${version}.tar.gz"
@@ -92,7 +92,6 @@ python-audit_package() {
 python3-audit_package() {
 	lib32disabled=yes
 	short_desc+=" - Python3 bindings"
-	pycompile_module="audit.py"
 	pkg_install() {
 		vmove "usr/lib/python3*"
 	}

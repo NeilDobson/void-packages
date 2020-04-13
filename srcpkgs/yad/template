@@ -1,17 +1,17 @@
 # Template file for 'yad'
 pkgname=yad
-version=2.0
+version=6.0
 revision=1
 build_style=gnu-configure
 configure_args="--enable-icon-browser"
 hostmakedepends="automake gettext-devel glib-devel intltool pkg-config"
-makedepends="gtk+3-devel"
+makedepends="gtk+3-devel webkit2gtk-devel gtksourceview-devel gspell-devel"
 short_desc="Yet Another Dialog"
-maintainer="Juan RP <xtraeme@voidlinux.org>"
+maintainer="Benjamin Slade <slade@lambda-y.net>"
 license="GPL-3.0-or-later"
 homepage="https://github.com/v1cont/yad"
-distfiles="https://github.com/v1cont/yad/archive/${version}.tar.gz"
-checksum=acdbd59ee2e3ad67a61da965b2ea88e3b07bcee438382f4614e8f6f1f1ee7871
+distfiles="https://github.com/v1cont/yad/releases/download/v${version}/yad-${version}.tar.xz"
+checksum=bcbf0a298a0b6c069b1f7ac6c7914af09fea9932914787faad7e7fe4eebe9051
 
 pre_configure() {
 	autoreconf -ivf

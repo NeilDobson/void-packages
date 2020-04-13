@@ -1,6 +1,6 @@
 # Template file for 'nodejs'
 pkgname=nodejs
-version=12.7.0
+version=13.2.0
 revision=1
 wrksrc="node-v${version}"
 # Need these for host v8 for torque, see https://github.com/nodejs/node/pull/21079
@@ -17,7 +17,7 @@ maintainer="Enno Boland <gottox@voidlinux.org>"
 license="MIT"
 homepage="https://nodejs.org/"
 distfiles="${homepage}/dist/v${version}/node-v${version}.tar.gz"
-checksum=d5e63fd4ee88d539a69b9e71631d03014bd8e98596e741515e3d7aa930f4630a
+checksum=379dcecb721984a99dc9e16c2a096d6eb7a760d50b188582d9ce33e0478a1a5e
 
 build_options="ssl libuv http_parser icu nghttp2 cares"
 desc_option_ssl="Enable shared libressl"
@@ -29,24 +29,24 @@ desc_option_cares="Enable shared c-ares"
 build_options_default="libuv http_parser icu nghttp2 cares"
 
 replaces="iojs>=0"
-conflicts="nodejs-lts"
+conflicts="nodejs-lts nodejs-lts-10"
 provides="nodejs-runtime-0_1"
 
 if [ "$XBPS_WORDSIZE" -ne "$XBPS_TARGET_WORDSIZE" ]; then
 	nocross="host and target must have the same pointer size"
 fi
 
-# v8 requires libatomic on ppc*/s390x/mips*
 case "$XBPS_TARGET_MACHINE" in
-	mips*|ppc*) makedepends+=" libatomic-devel" ;;
-	*) ;;
+	ppc64*) ;;
+	ppc*) broken="Node 12.x does not support 32-bit ppc" ;;
 esac
 
-# also need it on host when it's one of those archs
-case "$XBPS_MACHINE" in
-	mips*|ppc*) hostmakedepends+=" libatomic-devel" ;;
-	*) ;;
-esac
+if [ "$XBPS_TARGET_NO_ATOMIC8" ]; then
+	makedepends+=" libatomic-devel"
+fi
+if [ "$XBPS_NO_ATOMIC8" ]; then
+	hostmakedepends+=" libatomic-devel"
+fi
 
 do_configure() {
 	local _args
@@ -72,6 +72,10 @@ do_configure() {
 		# to execute it within the build system fails
 		_args+=" --cross-compiling"
 	fi
+	# their pregenerated asm is for ELFv1...
+	case "$XBPS_TARGET_MACHINE" in
+		ppc64|ppc64-musl) _args+=" --openssl-no-asm" ;;
+	esac
 	./configure --prefix=/usr --shared-zlib \
 		$(vopt_if icu --with-intl=system-icu) \
 		$(vopt_if http_parser --shared-http-parser) \
@@ -93,8 +97,17 @@ do_build() {
 		make LD="$CXX" LDFLAGS+=-ldl ${makejobs} V=1
 	fi
 }
+
 do_install() {
 	make LD="$CXX" LDFLAGS+=-ldl DESTDIR="$DESTDIR" install
+	rm $DESTDIR/usr/include/node/openssl -rf
 	vlicense LICENSE
-	rm -r $DESTDIR/usr/include
+}
+
+nodejs-devel_package() {
+	short_desc+=" (development files)"
+	conflicts="nodejs-lts-devel nodejs-lts-10-devel"
+	pkg_install() {
+		vmove usr/include
+	}
 }

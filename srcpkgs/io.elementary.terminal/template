@@ -1,6 +1,6 @@
 # Template file for 'io.elementary.terminal'
 pkgname=io.elementary.terminal
-version=5.3.6
+version=5.5.2
 revision=1
 wrksrc="terminal-${version}"
 build_style=meson
@@ -9,11 +9,11 @@ hostmakedepends="desktop-file-utils intltool pkg-config vala AppStream glib-deve
 makedepends="granite-devel libnotify-devel vte3-devel"
 depends="desktop-file-utils gsettings-desktop-schemas"
 short_desc="Terminal from elementary OS for the 21st century"
-maintainer="Cameron Nemo <camerontnorman@gmail.com>"
+maintainer="Cameron Nemo <cnemo@tutanota.com>"
 license="LGPL-3.0-only"
 homepage="https://github.com/elementary/terminal"
 distfiles="https://github.com/elementary/terminal/archive/${version}.tar.gz"
-checksum=c3e01bd11788c9c65a604ae5653a0bead8a35635a46268e329690dc841eef18a
+checksum=589ad0225e3a45700d95c8ead1b646f22a22c7688f647876a5329b3b4bd923cd
 
 pantheon-terminal_package() {
 	depends="io.elementary.terminal>=${version}_${revision}"

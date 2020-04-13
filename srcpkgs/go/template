@@ -1,28 +1,33 @@
 # Template file for 'go'
 pkgname=go
-version=1.12.7
+version=1.14.2
 revision=1
 create_wrksrc=yes
 build_wrksrc=go
-hostmakedepends="go1.4-bootstrap"
+hostmakedepends="go1.12-bootstrap"
 short_desc="Go Programming Language"
 maintainer="Michael Aldridge <maldridge@voidlinux.org>"
 license="BSD-3-Clause"
 homepage="http://golang.org/"
 distfiles="https://golang.org/dl/go${version}.src.tar.gz"
-checksum=95e8447d6f04b8d6a62de1726defbb20ab203208ee167ed15f83d7978ce43b13
-
+checksum=98de84e69726a66da7b4e58eac41b99cbe274d7e8906eeb8a5b7eb0aadee7f7c
 nostrip=yes
 noverifyrdeps=yes
 
 case "${XBPS_TARGET_MACHINE}" in
 	aarch64*) _goarch=arm64 ;;
 	arm*) _goarch=arm ;;
-	mips*) _goarch=mips ;;
 	i686*) _goarch=386 ;;
 	x86_64*) _goarch=amd64 ;;
-	*) _goarch=${XBPS_TARGET_MACHINE} ;;
+	ppc64le*) _goarch=ppc64le ;;
+	*) broken="Unsupported architecture ${XBPS_TARGET_MACHINE}" ;;
 esac
+
+if [ "$CROSS_BUILD" ]; then
+	if [ "${XBPS_MACHINE%%-musl}" = "${XBPS_TARGET_MACHINE%%-musl}" ]; then
+		broken="Cross-compiling to different libc is not supported"
+	fi
+fi
 
 do_build() {
 	unset GCC CC CXX LD CFLAGS
@@ -30,11 +35,9 @@ do_build() {
 	# dependency
 	unset CGO_CXXFLAGS CGO_CFLAGS CGO_ENABLED
 
-
-	export GOCACHE=off
+	export GOROOT_BOOTSTRAP="/usr/lib/go1.12"
 	export GOROOT=$PWD
 	export GOROOT_FINAL="/usr/lib/go"
-	export GOROOT_BOOTSTRAP="/usr/lib/go1.4"
 	export GOARCH=${_goarch}
 
 	cd "src"

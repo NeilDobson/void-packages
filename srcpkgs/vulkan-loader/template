@@ -1,11 +1,11 @@
 # Template file for 'vulkan-loader'
 pkgname=vulkan-loader
 _pkgname=Vulkan-Loader
-version=1.1.108
+version=1.2.135
 revision=1
 wrksrc="${_pkgname}-${version}"
 build_style=cmake
-configure_args="-DBUILD_TESTS=OFF"
+configure_args="-DVULKAN_HEADERS_INSTALL_DIR=${XBPS_CROSS_BASE}/usr -DBUILD_TESTS=OFF"
 hostmakedepends="python3 pkg-config"
 makedepends="Vulkan-Headers libxcb-devel libxkbcommon-devel wayland-devel
  libXrandr-devel"
@@ -14,8 +14,4 @@ maintainer="Arvin Ignaci <arvin.ignaci@gmail.com>"
 license="Apache-2.0"
 homepage="https://www.khronos.org/vulkan/"
 distfiles="https://github.com/KhronosGroup/${_pkgname}/archive/v${version}.tar.gz"
-checksum=16655a1dda5cf09c29e9e6261edac9bfca5953e774f8ef2418617fd1b0aecb29
-
-if [ "$CROSS_BUILD" ]; then
-	configure_args+=" -DVULKAN_HEADERS_INSTALL_DIR=${XBPS_CROSS_BASE}/usr"
-fi
+checksum=9a45c9bfce00026f5c12d4b869f87f2708cb28be49f3cd6c5044c7f8121071b6

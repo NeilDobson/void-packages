@@ -1,8 +1,8 @@
 # Template file for 'libgnome-games-support'
 pkgname=libgnome-games-support
-version=1.4.3
+version=1.6.1
 revision=1
-build_style=gnu-configure
+build_style=meson
 hostmakedepends="intltool pkg-config gobject-introspection vala"
 makedepends="gtk+3-devel libgee08-devel"
 short_desc="GNOME games shared code"
@@ -10,7 +10,7 @@ maintainer="Jürgen Buchmüller <pullmoll@t-online.de>"
 license="GPL-3.0-or-later"
 homepage="https://git.gnome.org/browse/libgnome-games-support/"
 distfiles="${GNOME_SITE}/${pkgname}/${version%.*}/${pkgname}-${version}.tar.xz"
-checksum=704a7a93aa5066f84738b60d696cf393dfbbf1a3e339f9adbb40af0cf70eca3c
+checksum=fb686af62e24dc33f26c581aa019fcdf3605787dd76cb59ac99a8a34d1b808bf
 
 libgnome-games-support-devel_package() {
 	short_desc+=" - development files"

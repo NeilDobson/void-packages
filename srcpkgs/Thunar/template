@@ -1,7 +1,8 @@
 # Template file for 'Thunar'
 pkgname=Thunar
-version=1.8.8
+version=1.8.14
 revision=1
+wrksrc=thunar-${version}
 build_style=gnu-configure
 build_helper="gir"
 configure_args="--enable-gio-unix --enable-gudev
@@ -10,12 +11,12 @@ hostmakedepends="pkg-config intltool"
 makedepends="exo-devel libexif-devel libgudev-devel libnotify-devel xfce4-panel-devel"
 depends="desktop-file-utils hicolor-icon-theme"
 short_desc="Thunar File Manager"
-maintainer="Juan RP <xtraeme@voidlinux.org>"
+maintainer="Orphaned <orphan@voidlinux.org>"
 license="GPL-2.0-or-later, LGPL-2.1-or-later"
 homepage="https://docs.xfce.org/xfce/thunar/Start"
 changelog="https://raw.githubusercontent.com/xfce-mirror/thunar/master/NEWS"
-distfiles="https://archive.xfce.org/src/xfce/thunar/${version%.*}/${pkgname}-${version}.tar.bz2"
-checksum=a03761de4a43c36b9daa6029e6e3263a23c8ce429d78a9f9156ab48efdb2800c
+distfiles="https://archive.xfce.org/src/xfce/thunar/${version%.*}/thunar-${version}.tar.bz2"
+checksum=8ac57b1f5842d5bd348bbb6dac4714f5ad1f22de651d8ec6a7099ceb19fa219f
 
 post_install() {
 	rm -rf ${DESTDIR}/usr/lib/systemd

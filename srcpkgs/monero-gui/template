@@ -1,28 +1,27 @@
 # Template file for 'monero-gui'
 pkgname=monero-gui
-version=0.14.1.2
-revision=2
+version=0.15.0.4
+revision=1
 build_style=qmake
-hostmakedepends="pkg-config qt5-tools qt5-qmake qt5-quickcontrols qt5-declarative-devel qt5-svg-devel"
+hostmakedepends="pkg-config qt5-tools qt5-qmake qt5-quickcontrols qt5-declarative-devel
+ qt5-svg-devel"
 makedepends="boost-devel libatomic-devel libunwind-devel miniupnpc-devel monero-devel
 qt5-declarative-devel readline-devel unbound-devel libsodium-devel hidapi-devel
- qt5-svg-devel"
-depends="qt5-graphicaleffects qt5-quickcontrols qt5-quickcontrols2"
+ qt5-svg-devel RandomX"
+depends="qt5-graphicaleffects qt5-quickcontrols qt5-quickcontrols2 qt5-xmlpatterns"
 short_desc="GUI for the core Monero implementation"
 maintainer="Helmut Pozimski <helmut@pozimski.eu>"
 license="BSD-3-Clause"
 homepage="https://getmonero.org"
 distfiles="https://github.com/monero-project/monero-gui/archive/v${version}.tar.gz"
-checksum=571ccd2500e4db938116b37693f512f032512967eb9146a549fea328a1484c8c
+checksum=0c77a2b149e1ee403b97e616f16da2e12c837ace82d654460845b0c7032b0978
 
 pre_configure() {
 	echo "var GUI_VERSION = \"${version}\"" > version.js
 	echo "var GUI_MONERO_VERSION = \"${version}\"" >> version.js
-	case "$XBPS_TARGET_MACHINE" in
-		armv[56]*|ppc|ppc-musl) # armv[56]* and ppc need to link libatomic.a for __atomic_fetch_sub_8
-			sed -i *.pro -e "s;-leasylogging;-leasylogging -latomic;"
-			;;
-	esac
+	if [ "$XBPS_TARGET_NO_ATOMIC8" ]; then
+		sed -i *.pro -e "s;-leasylogging;-leasylogging -latomic;"
+	fi
 }
 
 pre_build() {

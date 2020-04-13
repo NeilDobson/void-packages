@@ -1,7 +1,7 @@
 # Template file for 'nnn'
 pkgname=nnn
-version=2.6
-revision=1
+version=3.0
+revision=2
 build_style=gnu-makefile
 hostmakedepends="pkg-config"
 makedepends="ncurses-devel readline-devel"
@@ -11,7 +11,7 @@ license="BSD-2-Clause"
 homepage="https://github.com/jarun/nnn"
 changelog="https://raw.githubusercontent.com/jarun/nnn/master/CHANGELOG"
 distfiles="https://github.com/jarun/nnn/archive/v${version}.tar.gz"
-checksum=17fd3e517308e41065594ffe8dcde348b4d10dea4240699f4708337db48b3e25
+checksum=04db6d6710ce1232c779bf70137a86557e486614e20327717122bb63f36348f7
 
 post_install() {
 	vinstall misc/auto-completion/bash/nnn-completion.bash 644 \
@@ -19,7 +19,7 @@ post_install() {
 	vinstall misc/auto-completion/zsh/_nnn 644 \
 		usr/share/zsh/site-functions
 	vinstall misc/auto-completion/fish/nnn.fish 644 \
-		usr/share/fish/completions
+		usr/share/fish/vendor_completions.d
 
 	vlicense LICENSE
 }

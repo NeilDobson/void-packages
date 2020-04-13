@@ -1,6 +1,6 @@
 # Template file for 'vapoursynth'
 pkgname=vapoursynth
-version=R45.1
+version=R49
 revision=1
 build_style=gnu-configure
 hostmakedepends="automake pkg-config libtool nasm python3-Cython"
@@ -12,24 +12,10 @@ license="LGPL-2.1-or-later, OFL-1.1"
 homepage="http://www.vapoursynth.com"
 changelog="https://raw.githubusercontent.com/vapoursynth/vapoursynth/master/ChangeLog"
 distfiles="https://github.com/vapoursynth/vapoursynth/archive/$version.tar.gz"
-checksum=4f43e5bb8c4817fdebe572d82febe4abac892918c54e1cb71aa6f6eb3677a877
-
-case $XBPS_TARGET_MACHINE in
-	aarch64*)
-		broken="no upstream support"
-		;;
-esac
+checksum=126d1e68d3a3e80d1e215c8a2a5dc8773f5fcac70a6c22dadc837bccb603bccd
 
 pre_configure() {
 	./autogen.sh
-	case $XBPS_TARGET_MACHINE in
-		arm*musl)
-			sed -i '/#include <sys\/auxv.h>/a #include <asm/hwcap.h>' src/core/cpufeatures.c
-			sed -i -e 's/HWCAP_ARM_/HWCAP_/' src/core/cpufeatures.c
-			;;
-		*)
-			;;
-	esac
 }
 
 vapoursynth-devel_package() {

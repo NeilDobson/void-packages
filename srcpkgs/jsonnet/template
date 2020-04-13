@@ -1,20 +1,22 @@
 # Template file for 'jsonnet'
 pkgname=jsonnet
-version=0.13.0
-revision=1
+version=0.15.0
+revision=3
 build_style=gnu-makefile
 short_desc="Data templating language"
 maintainer="Leah Neukirchen <leah@vuxu.org>"
 license="Apache-2.0"
 homepage="https://github.com/google/jsonnet"
 distfiles="https://github.com/google/jsonnet/archive/v${version}.tar.gz"
-checksum=f6f0c4ea333f3423f1a7237a8a107c589354c38be8a2a438198f9f7c69b77596
+checksum=0b58f2a36a5625c717e717a7e85608730e7bb5bfd8be1765dd6fa23be1f9b9e8
 
-CXXFLAGS="-Iinclude -Ithird_party/md5 -Ithird_party/json"
-CFLAGS="-Iinclude"
+CXXFLAGS="-fPIC"
 
-do_install() {
-	vbin jsonnet
-	vbin jsonnetfmt
-	vsconf stdlib/std.jsonnet
+jsonnet-devel_package() {
+	depends="${sourcepkg}-${version}_${revision}"
+	short_desc="${short_desc} - development files"
+	pkg_install() {
+		vmove usr/include
+		vmove "usr/lib/*.so"
+	}
 }

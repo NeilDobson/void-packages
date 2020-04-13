@@ -1,21 +1,18 @@
 # Template file for 'kcmutils'
 pkgname=kcmutils
-version=5.60.0
+version=5.69.0
 revision=1
 build_style=cmake
 configure_args="-DBUILD_TESTING=OFF"
-hostmakedepends="kcoreaddons extra-cmake-modules"
+hostmakedepends="kcoreaddons extra-cmake-modules
+ qt5-host-tools qt5-qmake python3 gettext"
 makedepends="kdeclarative-devel"
 short_desc="Utilities for KDE System Settings modules"
 maintainer="John <johnz@posteo.net>"
 license="LGPL-2.0-or-later, LGPL-2.0-only"
 homepage="https://projects.kde.org/projects/frameworks/kcmutils"
 distfiles="${KDE_SITE}/frameworks/${version%.*}/${pkgname}-${version}.tar.xz"
-checksum=22226ca10caedc6021b966a26a45096f30837ca9eedcc97479e30f950abc7b8c
-
-if [ "$CROSS_BUILD" ]; then
-	hostmakedepends+=" qt5-host-tools qt5-qmake python"
-fi
+checksum=0213655963d02b5e66918d242d71f08b9cde7c9040a95518437cdefa0959187d
 
 kcmutils-devel_package() {
 	short_desc+=" - development"

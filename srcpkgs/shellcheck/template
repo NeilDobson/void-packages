@@ -1,6 +1,6 @@
 # Template file for 'shellcheck'
 pkgname=shellcheck
-version=0.7.0
+version=0.7.1
 revision=1
 build_style=haskell-stack
 stackage="lts-13.26"
@@ -10,18 +10,17 @@ maintainer="Diogo Leal <diogo@diogoleal.com>"
 license="GPL-3.0-or-later"
 homepage="https://www.shellcheck.net/"
 distfiles="https://github.com/koalaman/shellcheck/archive/v${version}.tar.gz"
-checksum=946cf3421ffd418f0edc380d1184e4cb08c2ec7f098c79b1c8a2c482fe91d877
+checksum=50a219bde5c16fc0a40e2e3725b6c192ff589bc8a2569c32b62dcaece0495896
 nocross=yes
 nopie_files="/usr/bin/shellcheck"
 
-case "$XBPS_TARGET_MACHINE" in
-	i686)   broken="https://build.voidlinux.org/builders/i686_builder/builds/19227/steps/shell_3/logs/stdio"
-esac
-
 pre_configure() {
-	pandoc -s -t man shellcheck.1.md -o shellcheck.1
+	pandoc -s -f markdown-smart -t man shellcheck.1.md -o shellcheck.1
+	pandoc -s -f markdown-smart -t html5 -o README.html README.md
 }
 
 post_install() {
-	vdoc shellcheck.1
+	vdoc README.html
+	vman shellcheck.1
+	cp -r ${wrksrc}/doc ${PKGDESTDIR}/usr/share/doc/${pkgname}/doc
 }

@@ -148,6 +148,10 @@ Options:
 
 $(print_cross_targets)
 
+-c  <configuration>
+    If specified, etc/conf.<configuration> will be used as the primary config
+    file name; etc/conf will only be attempted if that does not exist.
+
 -C  Do not remove build directory, automatic dependencies and
     package destdir after successful install.
 
@@ -158,8 +162,6 @@ $(print_cross_targets)
     even if it ran successfully.
 
 -G  Enable XBPS_USE_GIT_REVS (see etc/defaults.conf for more information).
-
--Q  Enable running the check stage.
 
 -g  Enable building -dbg packages with debugging symbols.
 
@@ -185,10 +187,16 @@ $(print_cross_targets)
 -N  Disable use of remote repositories to resolve dependencies.
 
 -o  <opt,~opt2,...>
-    Enable or disable (prefixed with ~) package build options. Note this overrides
-    options set via XBPS_PKG_OPTIONS from 'etc/conf'. This effectively has the same
-    effect than setting 'XBPS_PKG_OPTIONS_<pkgname>' in 'etc/conf'.
+    Enable or disable (prefixed with ~) package build options. If 'etc/conf'
+    already specifies some, it is merged. Keep in mind that these options
+    apply to all packages within the build, as in if a dependency needs to
+    be built, it will inherit these options.
+
     Supported options can be shown with the 'show-options' target.
+
+-Q  Enable running the check stage.
+
+-q  Suppress informational output of xbps-src (build output is still printed).
 
 -r  <repo>
     Use an alternative local repository to store generated binary packages.
@@ -269,81 +277,10 @@ check_native_arch() {
     fi
 }
 
-install_bbootstrap() {
-    [ "$CHROOT_READY" ] && return
-    if [ "$1" = "bootstrap" ]; then
-        unset XBPS_TARGET_PKG XBPS_INSTALL_ARGS
-    else
-        XBPS_TARGET_PKG="$1"
-    fi
-    [ "$XBPS_SKIP_REMOTEREPOS" ] && unset XBPS_INSTALL_ARGS
-    # binary bootstrap
-    msg_normal "Installing bootstrap from binary package repositories...\n"
-    # XBPS_TARGET_PKG == arch
-    if [ "$XBPS_TARGET_PKG" ]; then
-        _bootstrap_arch="env XBPS_TARGET_ARCH=$XBPS_TARGET_PKG"
-        if [ "${XBPS_TARGET_PKG}" != "${XBPS_TARGET_PKG#*-}" ]; then
-            _subarch="-${XBPS_TARGET_PKG#*-}"
-        fi
-    fi
-    mkdir -p $XBPS_MASTERDIR/var/db/xbps/keys
-    cd $XBPS_MASTERDIR
-    cp -f $XBPS_COMMONDIR/repo-keys/*.plist $XBPS_MASTERDIR/var/db/xbps/keys
-    ${_bootstrap_arch} $XBPS_INSTALL_CMD ${XBPS_INSTALL_ARGS:+-S $XBPS_INSTALL_ARGS} -y base-chroot${_subarch}
-    if [ $? -ne 0 ]; then
-        msg_error "Failed to install bootstrap packages!\n"
-    fi
-    # Reconfigure base-files to create dirs/symlinks.
-    if xbps-query -r $XBPS_MASTERDIR base-files &>/dev/null; then
-        XBPS_ARCH=$XBPS_TARGET_PKG xbps-reconfigure -r $XBPS_MASTERDIR -f base-files &>/dev/null
-    fi
-
-    msg_normal "Installed bootstrap successfully!\n"
-    chroot_prepare $XBPS_TARGET_PKG || msg_error "Failed to initialize chroot!\n"
-    chroot_check
-    chroot_handler clean
-}
-
-reconfigure_bootstrap_pkgs() {
-    local statefile="$XBPS_MASTERDIR/.xbps_chroot_configured"
-    local pkgs="glibc-locales ca-certificates"
-    [ -z "$IN_CHROOT" -o -e $statefile ] && return 0
-    # Reconfigure ca-certificates.
-    msg_normal "Reconfiguring bootstrap packages...\n"
-    for f in ${pkgs}; do
-        if xbps-query -r $XBPS_MASTERDIR $f &>/dev/null; then
-            xbps-reconfigure -r $XBPS_MASTERDIR -f $f
-        fi
-    done
-    touch -f $statefile
-}
-
-bootstrap_update() {
-    [ -z "$CHROOT_READY" ] && return
-    remove_pkg_autodeps
-    msg_normal "xbps-src: cleaning up masterdir...\n"
-    rm -rf $XBPS_MASTERDIR/builddir $XBPS_MASTERDIR/destdir
-    msg_normal "xbps-src: updating $XBPS_MASTERDIR ...\n"
-    ${XBPS_INSTALL_CMD} ${XBPS_INSTALL_ARGS} -Syu
-    return $?
-}
-
 masterdir_zap() {
-    for f in bin boot builddir destdir dev etc home lib lib32 lib64 mnt \
-        opt proc root run sbin sys tmp usr var host media xbps \
-        void-packages .xbps_chroot_init .xbps_chroot_configured; do
-        if [ -d "$XBPS_MASTERDIR/$f" ]; then
-            echo "Removing directory $XBPS_MASTERDIR/$f ..."
-            rm -rf $XBPS_MASTERDIR/$f
-        elif [ -h "$XBPS_MASTERDIR/$f" ]; then
-            echo "Removing link $XBPS_MASTERDIR/$f ..."
-            rm -f $XBPS_MASTERDIR/$f
-        elif [ -f "$XBPS_MASTERDIR/$f" ]; then
-            echo "Removing file $XBPS_MASTERDIR/$f ..."
-            rm -f $XBPS_MASTERDIR/$f
-        fi
-    done
-    echo "$XBPS_MASTERDIR masterdir cleaned up."
+    rm -rf "$XBPS_MASTERDIR"
+    mkdir -p "$XBPS_MASTERDIR"
+    msg_normal "xbps-src: $XBPS_MASTERDIR masterdir cleaned up.\n"
 }
 
 exit_func() {
@@ -352,14 +289,14 @@ exit_func() {
         remove_pkg $XBPS_CROSS_BUILD
     fi
     if [ -z "$IN_CHROOT" ]; then
-        msg_red "xbps-src: a failure has ocurred! exiting...\n"
+        msg_red "xbps-src: a failure has occurred! exiting...\n"
     fi
     exit 2
 }
 
 read_pkg() {
     if [ -z "${XBPS_TARGET_PKG}" ]; then
-        [ ! -r ./template ] && msg_error "missing build template in $(pwd).\n"
+        [ ! -r ./template ] && msg_error "xbps-src: missing build template in $(pwd).\n"
         XBPS_TARGET_PKG=${PWD##*/}
     fi
     setup_pkg "$XBPS_TARGET_PKG" "$XBPS_CROSS_BUILD" "$1"
@@ -380,13 +317,13 @@ setup_distfiles_mirror() {
         [ "$scheme" != "file" ] && continue
         if [ "$XBPS_CHROOT_CMD" == "uchroot" -o "$XBPS_CHROOT_CMD" == "proot" ]; then
             if [ ! -d "$path" ]; then
-                msg_warn "Invalid path in XBPS_DISTFILES_MIRROR ($mirror)\n"
+                msg_warn "xbps-src: Invalid path in XBPS_DISTFILES_MIRROR ($mirror)\n"
                 continue
             fi
             mkdir -p "$XBPS_MASTERDIR/$path"
             XBPS_CHROOT_CMD_ARGS+=" -b $path:$path"
         else
-            msg_warn "File URLs ($mirror) don't work with '$XBPS_CHROOT_CMD'\n"
+            msg_warn "xbps-src: File URLs ($mirror) don't work with '$XBPS_CHROOT_CMD'\n"
         fi
     done
 }
@@ -403,33 +340,37 @@ readonly XBPS_SRC_VERSION="113"
 export XBPS_MACHINE=$(xbps-uhelper -C /dev/null arch)
 
 XBPS_OPTIONS=
-XBPS_OPTSTRING="1a:CEfgGhH:iIj:Lm:No:qQr:tV"
+XBPS_OPTSTRING="1a:c:CEfgGhH:iIj:Lm:No:qQr:tV"
 
 # Preprocess arguments in order to allow options before and after XBPS_TARGET.
 eval set -- $(getopt "$XBPS_OPTSTRING" "$@");
 
+# Options are saved as XBPS_ARG_FOO instead of XBPS_FOO for now; this is
+# because configuration files may override those and we want arguments to
+# take precedence over configuration files
 while getopts "$XBPS_OPTSTRING" opt; do
     case $opt in
-        1) export XBPS_BUILD_ONLY_ONE_PKG=yes; XBPS_OPTIONS+=" -1";;
-        a) export XBPS_CROSS_BUILD="$OPTARG"; XBPS_OPTIONS+=" -a $OPTARG";;
-        C) export XBPS_KEEP_ALL=1; XBPS_OPTIONS+=" -C";;
-        E) export XBPS_BINPKG_EXISTS=1; XBPS_OPTIONS+=" -E";;
-        f) export XBPS_BUILD_FORCEMODE=1; XBPS_OPTIONS+=" -f";;
-        G) export XBPS_USE_GIT_REVS=1; XBPS_OPTIONS+=" -G";;
-        g) export XBPS_DEBUG_PKGS=1; XBPS_OPTIONS+=" -g";;
-        H) export XBPS_HOSTDIR="$(readlink -f $OPTARG 2>/dev/null)"; XBPS_OPTIONS+=" -H $XBPS_HOSTDIR";;
+        1) XBPS_ARG_BUILD_ONLY_ONE_PKG=yes; XBPS_OPTIONS+=" -1";;
+        a) XBPS_ARG_CROSS_BUILD="$OPTARG"; XBPS_OPTIONS+=" -a $OPTARG";;
+        c) XBPS_ARG_CONFIG="$OPTARG"; XBPS_OPTIONS+=" -c $OPTARG";;
+        C) XBPS_ARG_KEEP_ALL=1; XBPS_OPTIONS+=" -C";;
+        E) XBPS_ARG_BINPKG_EXISTS=1; XBPS_OPTIONS+=" -E";;
+        f) XBPS_ARG_BUILD_FORCEMODE=1; XBPS_OPTIONS+=" -f";;
+        G) XBPS_ARG_USE_GIT_REVS=1; XBPS_OPTIONS+=" -G";;
+        g) XBPS_ARG_DEBUG_PKGS=1; XBPS_OPTIONS+=" -g";;
+        H) XBPS_ARG_HOSTDIR="$OPTARG"; XBPS_OPTIONS+=" -H $OPTARG";;
         h) usage && exit 0;;
-        i) export XBPS_INFORMATIVE_RUN=1; XBPS_OPTIONS+=" -i";;
-        I) export XBPS_SKIP_DEPS=1; XBPS_OPTIONS+=" -I";;
-        j) export XBPS_MAKEJOBS="$OPTARG"; XBPS_OPTIONS+=" -j $OPTARG";;
+        i) XBPS_ARG_INFORMATIVE_RUN=1; XBPS_OPTIONS+=" -i";;
+        I) XBPS_ARG_SKIP_DEPS=1; XBPS_OPTIONS+=" -I";;
+        j) XBPS_ARG_MAKEJOBS="$OPTARG"; XBPS_OPTIONS+=" -j $OPTARG";;
         L) export NOCOLORS=1; XBPS_OPTIONS+=" -L";;
-        m) export XBPS_MASTERDIR=$(readlink -f $OPTARG 2>/dev/null); XBPS_OPTIONS+=" -m $XBPS_MASTERDIR";;
-        N) export XBPS_SKIP_REMOTEREPOS=1; XBPS_OPTIONS+=" -N";;
-        o) export XBPS_PKG_OPTIONS="$OPTARG"; XBPS_OPTIONS+=" -o $OPTARG";;
-        q) export XBPS_QUIET=1; XBPS_OPTIONS+=" -q";;
-        Q) export XBPS_CHECK_PKGS=1; XBPS_OPTIONS+=" -Q";;
-        r) export XBPS_ALT_REPOSITORY="$OPTARG"; XBPS_OPTIONS+=" -r $OPTARG";;
-        t) export XBPS_TEMP_MASTERDIR=1; XBPS_OPTIONS+=" -t -C";;
+        m) XBPS_ARG_MASTERDIR="$OPTARG"; XBPS_OPTIONS+=" -m $OPTARG";;
+        N) XBPS_ARG_SKIP_REMOTEREPOS=1; XBPS_OPTIONS+=" -N";;
+        o) XBPS_ARG_PKG_OPTIONS="$OPTARG"; XBPS_OPTIONS+=" -o $OPTARG";;
+        q) XBPS_ARG_QUIET=1; XBPS_OPTIONS+=" -q";;
+        Q) XBPS_ARG_CHECK_PKGS=1; XBPS_OPTIONS+=" -Q";;
+        r) XBPS_ARG_ALT_REPOSITORY="$OPTARG"; XBPS_OPTIONS+=" -r $OPTARG";;
+        t) XBPS_ARG_TEMP_MASTERDIR=1; XBPS_OPTIONS+=" -t -C";;
         V) echo "xbps-src-$XBPS_SRC_VERSION $(xbps-uhelper -V)" && exit 0;;
         --) shift; break;;
     esac
@@ -452,10 +393,10 @@ umask 022
 # Check for required utilities in host system.
 #
 # Required utilities in host system for the bootstrap target.
-readonly REQHOST_UTILS_BOOTSTRAP="make gawk bash bison sed gcc g++ msgfmt makeinfo \
-    perl tar xz gzip bzip2 patch flex automake libtool pkg-config"
+readonly REQHOST_UTILS_BOOTSTRAP="file objdump find make gawk bash sed gcc g++ gnat \
+    perl bsdtar gzip patch flock pkg-config"
 
-# Required utilities in host system for chroot ops.
+# Required utilities in host.
 readonly REQHOST_UTILS="xbps-install xbps-query xbps-rindex xbps-uhelper \
     xbps-reconfigure xbps-remove xbps-create xbps-uchroot xbps-uunshare"
 
@@ -481,8 +422,11 @@ else
     if [ -f $XBPS_DISTDIR/etc/defaults.conf ]; then
         . $XBPS_DISTDIR/etc/defaults.conf
     fi
-    if [ -s $XBPS_DISTDIR/etc/conf ]; then
-        # Read user configuration first...
+    if [ -n "$XBPS_ARG_CONFIG" -a -s $XBPS_DISTDIR/etc/conf.$XBPS_ARG_CONFIG ]; then
+        # If specified, read custom user configuration...
+        readonly XBPS_CONFIG_FILE=$XBPS_DISTDIR/etc/conf.$XBPS_ARG_CONFIG
+    elif [ -s $XBPS_DISTDIR/etc/conf ]; then
+        # ... otherwise read generic user configuration...
         readonly XBPS_CONFIG_FILE=$XBPS_DISTDIR/etc/conf
     elif [ -s $HOME/.xbps-src.conf ]; then
         # ... fallback to ~/.xbps-src.conf otherwise.
@@ -491,6 +435,55 @@ else
 fi
 # Read settings from config file
 [ -s "$XBPS_CONFIG_FILE" ] && . $XBPS_CONFIG_FILE &>/dev/null
+
+# Set options passed on command line, after configuration files have been read
+[ -n "$XBPS_ARG_BUILD_ONLY_ONE_PKG" ] && XBPS_BUILD_ONLY_ONE_PKG=yes
+[ -n "$XBPS_ARG_SKIP_REMOTEREPOS" ] && XBPS_SKIP_REMOTEREPOS=1
+[ -n "$XBPS_ARG_BUILD_FORCEMODE" ] && XBPS_BUILD_FORCEMODE=1
+[ -n "$XBPS_ARG_INFORMATIVE_RUN" ] && XBPS_INFORMATIVE_RUN=1
+[ -n "$XBPS_ARG_TEMP_MASTERDIR" ] && XBPS_TEMP_MASTERDIR=1
+[ -n "$XBPS_ARG_BINPKG_EXISTS" ] && XBPS_BINPKG_EXISTS=1
+[ -n "$XBPS_ARG_USE_GIT_REVS" ] && XBPS_USE_GIT_REVS=1
+[ -n "$XBPS_ARG_CHECK_PKGS" ] && XBPS_CHECK_PKGS=1
+[ -n "$XBPS_ARG_DEBUG_PKGS" ] && XBPS_DEBUG_PKGS=1
+[ -n "$XBPS_ARG_SKIP_DEPS" ] && XBPS_SKIP_DEPS=1
+[ -n "$XBPS_ARG_KEEP_ALL" ] && XBPS_KEEP_ALL=1
+[ -n "$XBPS_ARG_QUIET" ] && XBPS_QUIET=1
+[ -n "$XBPS_ARG_ALT_REPOSITORY" ] && XBPS_ALT_REPOSITORY="$XBPS_ARG_ALT_REPOSITORY"
+[ -n "$XBPS_ARG_CROSS_BUILD" ] && XBPS_CROSS_BUILD="$XBPS_ARG_CROSS_BUILD"
+[ -n "$XBPS_ARG_MAKEJOBS" ] && XBPS_MAKEJOBS="$XBPS_ARG_MAKEJOBS"
+
+export XBPS_BUILD_ONLY_ONE_PKG XBPS_SKIP_REMOTEREPOS XBPS_BUILD_FORCEMODE \
+       XBPS_INFORMATIVE_RUN XBPS_TEMP_MASTERDIR XBPS_BINPKG_EXISTS \
+       XBPS_USE_GIT_REVS XBPS_CHECK_PKGS XBPS_DEBUG_PKGS XBPS_SKIP_DEPS \
+       XBPS_KEEP_ALL XBPS_QUIET XBPS_ALT_REPOSITORY XBPS_CROSS_BUILD \
+       XBPS_MAKEJOBS
+
+# The masterdir/hostdir variables are forced and readonly in chroot
+if [ -z "$IN_CHROOT" ]; then
+    [ -n "$XBPS_ARG_MASTERDIR" ] && XBPS_MASTERDIR="$XBPS_ARG_MASTERDIR"
+    [ -n "$XBPS_ARG_HOSTDIR" ] && XBPS_HOSTDIR="$XBPS_ARG_HOSTDIR"
+
+    # Sanitize masterdir/hostdir once set for real (resolve links)
+    export XBPS_MASTERDIR="$(readlink -f $XBPS_MASTERDIR 2>/dev/null)"
+    export XBPS_HOSTDIR="$(readlink -f $XBPS_HOSTDIR 2>/dev/null)"
+fi
+
+# If pkg options were set in config(s), merge them with command line
+if [ -n "$XBPS_ARG_PKG_OPTIONS" ]; then
+    if [ -n "$XBPS_PKG_OPTIONS" ]; then
+        export XBPS_PKG_OPTIONS+=",$XBPS_ARG_PKG_OPTIONS"
+    else
+        export XBPS_PKG_OPTIONS="$XBPS_ARG_PKG_OPTIONS"
+    fi
+fi
+
+# Forbid root unless XBPS_ALLOW_CHROOT_BREAKOUT is set
+# (for travis CI).
+if [ -z "$IN_CHROOT" -a "$UID" -eq 0 -a -z "$XBPS_ALLOW_CHROOT_BREAKOUT" ]; then
+    echo "ERROR: xbps-src cannot be used as root." 1>&2
+    exit 1
+fi
 
 # if XBPS_MASTERDIR unset, defaults to $XBPS_DISTDIR/masterdir.
 : ${XBPS_MASTERDIR:=$XBPS_DISTDIR/masterdir}
@@ -547,30 +540,6 @@ readonly XBPS_BUILDSTYLEDIR=$XBPS_COMMONDIR/build-style
 readonly XBPS_LIBEXECDIR=$XBPS_COMMONDIR/xbps-src/libexec
 readonly XBPS_BUILDHELPERDIR=$XBPS_COMMONDIR/build-helper
 
-if [ "$IN_CHROOT" ]; then
-    readonly XBPS_UHELPER_CMD="xbps-uhelper"
-    readonly XBPS_INSTALL_CMD="xbps-install --repository=$XBPS_REPOSITORY"
-    readonly XBPS_QUERY_CMD="xbps-query --repository=$XBPS_REPOSITORY"
-    readonly XBPS_RECONFIGURE_CMD="xbps-reconfigure"
-    readonly XBPS_REMOVE_CMD="xbps-remove"
-    readonly XBPS_CHECKVERS_CMD="xbps-checkvers --repository=$XBPS_REPOSITORY"
-    readonly XBPS_DESTDIR=/destdir
-    readonly XBPS_BUILDDIR=/builddir
-else
-    readonly XBPS_UHELPER_CMD="xbps-uhelper -r $XBPS_MASTERDIR"
-    readonly XBPS_INSTALL_CMD="xbps-install -c $XBPS_HOSTDIR/repocache --repository=$XBPS_REPOSITORY -r $XBPS_MASTERDIR"
-    readonly XBPS_QUERY_CMD="xbps-query -c $XBPS_HOSTDIR/repocache --repository=$XBPS_REPOSITORY -r $XBPS_MASTERDIR"
-    readonly XBPS_RECONFIGURE_CMD="xbps-reconfigure -r $XBPS_MASTERDIR"
-    readonly XBPS_REMOVE_CMD="xbps-remove -r $XBPS_MASTERDIR"
-    readonly XBPS_CHECKVERS_CMD="xbps-checkvers --repository=$XBPS_REPOSITORY"
-    readonly XBPS_DESTDIR=$XBPS_MASTERDIR/destdir
-    readonly XBPS_BUILDDIR=$XBPS_MASTERDIR/builddir
-fi
-readonly XBPS_RINDEX_CMD="xbps-rindex"
-readonly XBPS_FETCH_CMD="xbps-fetch"
-readonly XBPS_DIGEST_CMD="xbps-digest"
-readonly XBPS_CMPVER_CMD="xbps-uhelper cmpver"
-
 readonly XBPS_TARGET="$1"
 if [ "$2" ]; then
     XBPS_TARGET_PKG="${2##*/}"
@@ -580,11 +549,29 @@ fi
 chroot_check
 check_native_arch
 
-# Reconfigure pkgs for 32bit on x86_64 and reexec itself.
-# XXX: how about 32bit userland on 64bit CPUs? (ppc, arm, etc).
+# test if to use linux32 for 32-bit masterdirs in 64-bit environments
+# x86_64, ppc64 (BE) and aarch64 are capable of this, others are not
+linux32_check() {
+    local hostarch="$1"
+    local tgtarch="$2"
+    case "$hostarch" in
+        x86_64*) if [[ "$tgtarch" == i686* ]]; then return 0; fi ;;
+        ppc64le*) return 1 ;;
+        ppc64*)
+            case "$tgtarch" in
+                ppc64*) return 1 ;;
+                ppc*) return 0 ;;
+            esac
+            ;;
+        aarch64*) if [[ "$tgtarch" == armv* ]]; then return 0; fi ;;
+    esac
+    return 1
+}
+
+# Reconfigure pkgs for 32bit on 64-bit systems and reexec itself.
 if [ -z "$XBPS_REINIT" -a -s $XBPS_MASTERDIR/.xbps_chroot_init ]; then
     export XBPS_ARCH=${XBPS_ARCH:-$(<$XBPS_MASTERDIR/.xbps_chroot_init)}
-    if [[ $XBPS_MACHINE == x86_64* ]] && [[ $XBPS_ARCH == i686* ]]; then
+    if linux32_check "$XBPS_MACHINE" "$XBPS_ARCH"; then
         # reconfigure pkgs via linux32
         linux32 xbps-reconfigure -r ${XBPS_MASTERDIR} -a &>/dev/null
         # reexec itself via linux32
@@ -600,6 +587,30 @@ fi
 if [ -z "$XBPS_TARGET_MACHINE" ]; then
         export XBPS_TARGET_MACHINE=$XBPS_MACHINE
 fi
+
+if [ "$IN_CHROOT" ]; then
+    readonly XBPS_UHELPER_CMD="xbps-uhelper"
+    readonly XBPS_INSTALL_CMD="xbps-install -c /host/repocache-$XBPS_MACHINE"
+    readonly XBPS_QUERY_CMD="xbps-query -c /host/repocache-$XBPS_MACHINE"
+    readonly XBPS_RECONFIGURE_CMD="xbps-reconfigure"
+    readonly XBPS_REMOVE_CMD="xbps-remove"
+    readonly XBPS_CHECKVERS_CMD="xbps-checkvers"
+    readonly XBPS_DESTDIR=/destdir
+    readonly XBPS_BUILDDIR=/builddir
+else
+    readonly XBPS_UHELPER_CMD="xbps-uhelper -r $XBPS_MASTERDIR"
+    readonly XBPS_INSTALL_CMD="xbps-install -c $XBPS_HOSTDIR/repocache-$XBPS_MACHINE -r $XBPS_MASTERDIR"
+    readonly XBPS_QUERY_CMD="xbps-query -c $XBPS_HOSTDIR/repocache-$XBPS_MACHINE -r $XBPS_MASTERDIR"
+    readonly XBPS_RECONFIGURE_CMD="xbps-reconfigure -r $XBPS_MASTERDIR"
+    readonly XBPS_REMOVE_CMD="xbps-remove -r $XBPS_MASTERDIR"
+    readonly XBPS_CHECKVERS_CMD="xbps-checkvers -r $XBPS_MASTERDIR"
+    readonly XBPS_DESTDIR=$XBPS_MASTERDIR/destdir
+    readonly XBPS_BUILDDIR=$XBPS_MASTERDIR/builddir
+fi
+readonly XBPS_RINDEX_CMD="xbps-rindex"
+readonly XBPS_FETCH_CMD="xbps-fetch"
+readonly XBPS_DIGEST_CMD="xbps-digest"
+readonly XBPS_CMPVER_CMD="xbps-uhelper cmpver"
 
 export XBPS_SHUTILSDIR XBPS_CROSSPFDIR XBPS_TRIGGERSDIR \
     XBPS_SRCPKGDIR XBPS_COMMONDIR XBPS_BUILDDIR \
@@ -681,46 +692,39 @@ for f in ${XBPS_SHUTILSDIR}/*.sh; do
     [ -r "$f" ] && . $f
 done
 
-reconfigure_bootstrap_pkgs
+reconfigure_base_chroot
 
 #
 # Main switch.
 #
 case "$XBPS_TARGET" in
     binary-bootstrap)
-        install_bbootstrap ${XBPS_TARGET_PKG:=$XBPS_MACHINE}
+        install_base_chroot ${XBPS_TARGET_PKG:=$XBPS_MACHINE}
         ;;
     bootstrap)
-        # bootstrap from sources
+        # base-chroot building on host
         # check for required host utils
         check_reqhost_utils bootstrap
-        [[ $XBPS_MACHINE =~ musl ]] && subarch="-musl"
-        [ ! -d $XBPS_SRCPKGDIR/base-chroot${subarch} ] && \
-            msg_error "Cannot find $XBPS_SRCPKGDIR/base-chroot${subarch} directory!\n"
-        bootstrap_vpkg=${XBPS_MASTERDIR}/etc/xbps.d/bootstrap-vpkgs.conf
-        mkdir -p ${XBPS_MASTERDIR}/etc/xbps.d
-        if [ ! -s ${bootstrap_vpkg} ]; then
-            # Fool xbps to resolve dependencies.
-            echo 'virtualpkg=libgcc:base-files' >> ${bootstrap_vpkg}
-            echo 'virtualpkg=libstdc++:base-files' >> ${bootstrap_vpkg}
-        fi
         (
             export XBPS_ARCH=$XBPS_MACHINE
             export XBPS_SKIP_REMOTEREPOS=1
+            chroot_sync_repodata
             $XBPS_LIBEXECDIR/build.sh \
-                base-chroot${subarch} base-chroot${subarch} $XBPS_TARGET || exit 1
+                base-chroot base-chroot $XBPS_TARGET || exit 1
         ) || exit 1
         [ -d $XBPS_MASTERDIR ] && rm -rf $XBPS_MASTERDIR
-        install_bbootstrap ${XBPS_TARGET_PKG:=$XBPS_MACHINE}
+        install_base_chroot ${XBPS_TARGET_PKG:=$XBPS_MACHINE}
         ;;
     bootstrap-update)
         if [ -n "$CHROOT_READY" -a -z "$IN_CHROOT" ]; then
             chroot_handler bootstrap-update
         else
-            bootstrap_update
+            chroot_sync_repodata
+            update_base_chroot
         fi
         ;;
     chroot)
+        chroot_sync_repodata
         chroot_handler chroot dummy
         ;;
     clean)
@@ -732,9 +736,12 @@ case "$XBPS_TARGET" in
             fi
             msg_normal "xbps-src: cleaning up masterdir...\n"
             # Needed to remove Go Modules
-            [ -d $XBPS_MASTERDIR/builddir ] && chmod -R +wX $XBPS_MASTERDIR/builddir
-            rm -rf $XBPS_MASTERDIR/builddir $XBPS_MASTERDIR/destdir
-            rm -f $XBPS_MASTERDIR/tmp/* >/dev/null 2>&1
+            [ -d "$XBPS_BUILDDIR" ] && chmod -R +wX $XBPS_BUILDDIR
+            rm -rf \
+                $XBPS_BUILDDIR \
+                $XBPS_DESTDIR
+            rm -rf $XBPS_MASTERDIR/tmp
+            mkdir -p $XBPS_MASTERDIR/tmp
         else
             read_pkg
             if [ -n "$CHROOT_READY" -a -z "$IN_CHROOT" ]; then
@@ -751,7 +758,7 @@ case "$XBPS_TARGET" in
         ;;
     clean-repocache)
         export XBPS_TARGET_ARCH="${XBPS_CROSS_BUILD:-$XBPS_TARGET_MACHINE}"
-        $XBPS_REMOVE_CMD -C /dev/null -c $XBPS_HOSTDIR/repocache -O
+        $XBPS_REMOVE_CMD -C /dev/null -c $XBPS_HOSTDIR/repocache-${XBPS_TARGET_ARCH} -O
         ;;
     consistency-check)
         consistency_check
@@ -771,7 +778,9 @@ case "$XBPS_TARGET" in
         if [ -n "$CHROOT_READY" -a -z "$IN_CHROOT" ]; then
             chroot_handler $XBPS_TARGET $XBPS_TARGET_PKG
         else
-            [ -z "$XBPS_KEEP_ALL" -a -z "$XBPS_SKIP_DEPS" ] && remove_pkg_autodeps
+            chroot_sync_repodata
+            # prevent update_base_chroot from removing the builddir/destdir
+            update_base_chroot keep-all-force
             $XBPS_LIBEXECDIR/build.sh $XBPS_TARGET_PKG $XBPS_TARGET_PKG \
                 $XBPS_TARGET $XBPS_CROSS_BUILD || exit $?
         fi
